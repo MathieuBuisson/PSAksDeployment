@@ -1,0 +1,11 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: secret-propagator
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["create", "watch", "get", "patch", "list"]
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["list", "watch"]

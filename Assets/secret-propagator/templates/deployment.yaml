@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: secret-propagator
+  namespace: {{ .Values.namespace.source }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      serviceAccountName: secret-propagator
+      containers:
+      - name: ns-watcher
+        image: boxboat/kubectl:{{ .Values.kubectlVersion }}
+        command:
+        - sh
+        - -c
+        - |
+          set -e
+          while true; do
+            echo "$(date '+%Y-%m-%d %H:%M:%S') Starting watch loop"
+            kubectl get ns --field-selector="status.phase==Active" --watch {{ template "secret-propagator.getNames" }} | \
+            while read ns; do
+              if [ "$ns" != "{{ .Values.namespace.source }}" ]; then
+                echo "$(date '+%Y-%m-%d %H:%M:%S') Detected new namespace [$ns]"
+                secrets=$(kubectl -n {{ .Values.namespace.source }} get secret --selector={{ template "secret-propagator.selector" . }} -o=jsonpath='{.items[*].metadata.name}')
+                for secret in $secrets; do
+                  echo "$(date '+%Y-%m-%d %H:%M:%S') Applying secret [$secret] to namespace [$ns]"
+                  kubectl -n {{ .Values.namespace.source }} get secret $secret -o yaml --export | \
+                  kubectl -n $ns apply -f -
+                done
+              fi
+            done
+          done
+      - name: secret-watcher
+        image: boxboat/kubectl:{{ .Values.kubectlVersion }}
+        command:
+        - sh
+        - -c
+        - |
+          set -e
+          while true; do
+            echo "$(date '+%Y-%m-%d %H:%M:%S') Starting watch loop"
+            kubectl -n {{ .Values.namespace.source }} get secret --selector={{ template "secret-propagator.selector" . }} --watch {{ template "secret-propagator.getNames" }} | \
+            while read secret; do
+              echo "$(date '+%Y-%m-%d %H:%M:%S') Detected new secret [$secret]"
+              secretYaml=$(kubectl -n {{ .Values.namespace.source }} get secret $secret -o yaml --export)
+              for ns in $(kubectl get ns --field-selector="status.phase==Active" {{ template "secret-propagator.getNames" }}); do
+                if [ "$ns" != "{{ .Values.namespace.source }}" ]; then
+                  echo "$(date '+%Y-%m-%d %H:%M:%S') Applying secret [$secret] to namespace [$ns]"
+                  echo "$secretYaml" | kubectl -n $ns apply -f -
+                fi
+              done
+            done
+          done

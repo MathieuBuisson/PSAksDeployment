@@ -1,0 +1,4 @@
+# Default values for cluster-issuer.
+
+environment: staging
+email: DevOps@test.net

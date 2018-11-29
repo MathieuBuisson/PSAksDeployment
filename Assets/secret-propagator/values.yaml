@@ -1,0 +1,9 @@
+# Default values for secret-propagator
+
+kubectlVersion: '1.12.1'
+selector:
+  key: propagate-to-ns
+  value: 'true'
+namespace:
+  source: kube-system
+replicaCount: 1

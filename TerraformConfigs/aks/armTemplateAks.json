@@ -1,0 +1,96 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "cluster_name": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "kubernetes_version": {
+            "type": "string"
+        },
+        "agent_count": {
+            "type": "string"
+        },
+        "agent_vm_size": {
+            "type": "string"
+        },
+        "os_disk_size_GB": {
+            "type": "string"
+        },
+        "agent_max_pods": {
+            "type": "string"
+        },
+        "client_id": {
+            "type": "string"
+        },
+        "client_secret": {
+            "type": "string"
+        },
+        "loganalytics_workspace_id": {
+            "type": "string"
+        },
+        "environment_tag": {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.ContainerService/managedClusters",
+            "name": "[parameters('cluster_name')]",
+            "apiVersion": "2018-03-31",
+            "location": "[parameters('location')]",
+            "tags": {
+                "environment": "[parameters('environment_tag')]"
+            },
+            "properties": {
+                "kubernetesVersion": "[parameters('kubernetes_version')]",
+                "dnsPrefix": "[parameters('cluster_name')]",
+                "agentPoolProfiles": [
+                    {
+                        "name": "agentpool",
+                        "count": "[int(parameters('agent_count'))]",
+                        "vmSize": "[parameters('agent_vm_size')]",
+                        "osDiskSizeGB": "[int(parameters('os_disk_size_GB'))]",
+                        "storageProfile": "ManagedDisks",
+                        "maxPods": "[int(parameters('agent_max_pods'))]",
+                        "osType": "Linux"
+                    }
+                ],
+                "servicePrincipalProfile": {
+                    "clientId": "[parameters('client_id')]",
+                    "secret": "[parameters('client_secret')]"
+                },
+                "addonProfiles": {
+                    "omsagent": {
+                        "enabled": true,
+                        "config": {
+                            "logAnalyticsWorkspaceResourceID": "[parameters('loganalytics_workspace_id')]"
+                        }
+                    }
+                },
+                "enableRBAC": true,
+                "networkProfile": {
+                    "networkPlugin": "kubenet"
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "masterFQDN": {
+            "type": "string",
+            "value": "[reference(parameters('cluster_name')).fqdn]"
+        },
+        "clusterID": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.ContainerService/managedClusters', parameters('cluster_name'))]"
+        },
+        "infraResourceGroup": {
+            "type": "string",
+            "value": "[reference(parameters('cluster_name')).nodeResourceGroup]"
+        }
+    }
+}
