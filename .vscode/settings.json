@@ -1,0 +1,26 @@
+{
+    "files.insertFinalNewline": true,
+    "editor.renderIndentGuides": true,
+    "editor.formatOnPaste": true,
+    "json.format.enable": true,
+    // Align assignment statements in a hashtable or a DSC Configuration.
+    "powershell.codeFormatting.alignPropertyValuePairs": true,
+    // Does not reformat one-line code blocks, such as "if (...) {...} else {...}".
+    "powershell.codeFormatting.ignoreOneLineBlock": true,
+    // Adds a newline (line break) after a closing brace.
+    "powershell.codeFormatting.newLineAfterCloseBrace": true,
+    // Adds a newline (line break) after an open brace.
+    "powershell.codeFormatting.newLineAfterOpenBrace": true,
+    // Places open brace on the same line as its associated statement.
+    "powershell.codeFormatting.openBraceOnSameLine": true,
+    // Sets the codeformatting options
+    "powershell.codeFormatting.preset": "Custom",
+    // Adds a space after a separator (',' and ';').
+    "powershell.codeFormatting.whitespaceAfterSeparator": true,
+    // Adds a space between a keyword and its associated expression.
+    "powershell.codeFormatting.whitespaceBeforeOpenBrace": true,
+    // Adds a space between a keyword (if, elseif, etc) and its associated expression.
+    "powershell.codeFormatting.whitespaceBeforeOpenParen": true,
+    // Enables real-time analysis from PowerShell Script Analyzer
+    "powershell.scriptAnalysis.enable": true
+}
