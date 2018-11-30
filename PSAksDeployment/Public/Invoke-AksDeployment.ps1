@@ -150,7 +150,12 @@ Function Invoke-AksDeployment {
         $Null = Disable-AzContextAutosave -Scope CurrentUser
 
         If ( $PSCmdlet.ParameterSetName -eq 'InputsFromParameters' ) {
-            Validate-ConfigKeysAndValues -Config $PSBoundParameters
+            $ConfigKeys = ($PSCmdlet.MyInvocation.MyCommand.Parameters.Values | Where-Object { $_.Attributes.ParameterSetName -eq 'InputsFromParameters' }).Name
+			$Config = @{}
+			Foreach ( $ConfigKey in $ConfigKeys ) {
+				$Config.Add($ConfigKey, (Get-Variable -Name $ConfigKey -ValueOnly))
+			}
+            Validate-ConfigKeysAndValues -Config $Config
         }
         ElseIf ( $PSCmdlet.ParameterSetName -eq 'InputsFromConfigFile' ) {
             $Config = Import-PowerShellDataFile -Path $ConfigPath

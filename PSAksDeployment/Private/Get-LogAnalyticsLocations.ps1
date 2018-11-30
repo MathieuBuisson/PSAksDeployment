@@ -1,10 +1,20 @@
 Function Get-LogAnalyticsLocations {
     [CmdletBinding()]
-    Param()
+    Param(
+        [Parameter(Mandatory, Position = 0)]
+        [string]$AzureTenantID,
+
+        [Parameter(Mandatory, Position = 1)]
+        [string]$ServicePrincipalID,
+
+        [Parameter(Mandatory, Position = 2)]
+        [string]$ServicePrincipalSecret
+    )
 
     If ( -not((Get-AzContext).Account) ) {
-        $TerraformUserCreds = Get-Credential -UserName '' -Message 'Please enter the secret for the Terraform Service Principal.'
-        Connect-AzAccount -ServicePrincipal -Credential $TerraformUserCreds -Tenant ''
+        $SecurePassword = ConvertTo-SecureString -String $ServicePrincipalSecret -AsPlainText -Force
+        $SPCredential = [pscredential]::new($ServicePrincipalID, $SecurePassword)
+        $Null = Connect-AzAccount -ServicePrincipal -Credential $SPCredential -Tenant $AzureTenantID
     }
 
     $Providers = Get-AzResourceProvider -ProviderNamespace 'Microsoft.OperationalInsights'
