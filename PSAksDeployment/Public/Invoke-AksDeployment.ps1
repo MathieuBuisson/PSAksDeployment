@@ -101,15 +101,15 @@ Function Invoke-AksDeployment {
         [string]$ClusterName,
 
         [Parameter(Mandatory=$False, Position=7, ParameterSetName='InputsFromParameters')]
-        [ValidateSet('1.9.10', '1.9.11', '1.10.7', '1.10.8', '1.11.2', '1.11.3')]
-        [string]$KubernetesVersion = '1.11.3',
+        [ValidateSet('1.9.10', '1.9.11', '1.10.7', '1.10.8', '1.11.2', '1.11.3', '1.11.4')]
+        [string]$KubernetesVersion = '1.11.4',
 
         [Parameter(Mandatory=$False, Position=8, ParameterSetName='InputsFromParameters')]
         [ValidateRange(1, 100)]
         [int]$NodeCount = 3,
 
         [Parameter(Mandatory=$False, Position=9, ParameterSetName='InputsFromParameters')]
-        [ValidateSet('B_2vCPU_8GB', 'B_4vCPU_16GB', 'D_2vCPU_8GB', 'D_4vCPU_16GB', 'E_2vCPU_16GB', 'E_4vCPU_32GB', 'F_2vCPU_4GB', 'F_4vCPU_8GB', 'DS_2vCPU_7GB', 'DS_4vCPU_14GB')]
+        [ValidateSet('B_2vCPU_8GB', 'B_4vCPU_16GB', 'D_2vCPU_8GB', 'D_4vCPU_16GB', 'D_8vCPU_32GB', 'E_2vCPU_16GB', 'E_4vCPU_32GB', 'F_2vCPU_4GB', 'F_4vCPU_8GB', 'DS_2vCPU_7GB', 'DS_4vCPU_14GB')]
         [string]$NodeSize = 'D_2vCPU_8GB',
 
         [Parameter(Mandatory=$False, Position=10, ParameterSetName='InputsFromParameters')]
