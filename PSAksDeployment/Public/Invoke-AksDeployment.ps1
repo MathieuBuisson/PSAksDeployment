@@ -86,19 +86,28 @@ Function Invoke-AksDeployment {
 #>
     [CmdletBinding(DefaultParameterSetName = 'InputsFromParameters')]
     Param(
-        [Parameter(Mandatory, Position=3, ParameterSetName='InputsFromParameters')]
+        [Parameter(Mandatory, Position=0, ParameterSetName='InputsFromParameters')]
         [string]$ServicePrincipalID,
 
-        [Parameter(Mandatory, Position=4, ParameterSetName='InputsFromParameters')]
+        [Parameter(Mandatory, Position=1, ParameterSetName='InputsFromParameters')]
         [string]$ServicePrincipalSecret,
 
-        [Parameter(Mandatory, Position=5, ParameterSetName='InputsFromParameters')]
+        [Parameter(Mandatory, Position=2, ParameterSetName='InputsFromParameters')]
         [string]$AzureTenantID,
 
-        [Parameter(Mandatory, Position=6, ParameterSetName='InputsFromParameters')]
+        [Parameter(Mandatory, Position=3, ParameterSetName='InputsFromParameters')]
+        [string]$Subscription,
+
+        [Parameter(Mandatory, Position=4, ParameterSetName='InputsFromParameters')]
         [ValidateLength(3, 29)]
         [ValidatePattern('^[A-Za-z]{1}[-\w]+\w{1}$')]
         [string]$ClusterName,
+
+        [Parameter(Mandatory, Position=5, ParameterSetName='InputsFromParameters')]
+        [string]$ClusterLocation,
+
+        [Parameter(Mandatory, Position=6, ParameterSetName='InputsFromParameters')]
+        [string]$LogAnalyticsWorkspaceLocation,
 
         [Parameter(Mandatory=$False, Position=7, ParameterSetName='InputsFromParameters')]
         [ValidateSet('1.9.10', '1.9.11', '1.10.7', '1.10.8', '1.11.2', '1.11.3', '1.11.4')]
@@ -135,43 +144,13 @@ Function Invoke-AksDeployment {
         [ValidateScript({ Test-Path -Path $_ -PathType Leaf })]
         [string]$ConfigPath
     )
-    DynamicParam {
-        $DynamicParameters = @(
-            @{
-                Name             = 'Subscription'
-                Type             = [string]
-                ParameterSetName = 'InputsFromParameters'
-                Position         = 0
-                Mandatory        = $True
-                ValidateSet      = Get-SubscriptionNames
-            },
-            @{
-                Name             = 'ClusterLocation'
-                Type             = [string]
-                ParameterSetName = 'InputsFromParameters'
-                Position         = 1
-                Mandatory        = $True
-                ValidateSet      = Get-AksLocations
-            },
-            @{
-                Name             = 'LogAnalyticsWorkspaceLocation'
-                Type             = [string]
-                ParameterSetName = 'InputsFromParameters'
-                Position         = 2
-                Mandatory        = $True
-                ValidateSet      = Get-LogAnalyticsLocations
-            }
-        )
-
-        $DynamicParameters | ForEach-Object { New-Object PSObject -Property $_ } | New-DynamicParameter
-    }
 
     Begin {
         $ErrorActionPreference = 'Stop'
         $Null = Disable-AzContextAutosave -Scope CurrentUser
 
         If ( $PSCmdlet.ParameterSetName -eq 'InputsFromParameters' ) {
-            New-DynamicParameter -CreateVariables -BoundParameters $PSBoundParameters
+            Validate-ConfigKeysAndValues -Config $PSBoundParameters
         }
         ElseIf ( $PSCmdlet.ParameterSetName -eq 'InputsFromConfigFile' ) {
             $Config = Import-PowerShellDataFile -Path $ConfigPath
