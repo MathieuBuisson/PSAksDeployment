@@ -11,16 +11,55 @@ Function New-AksDeploymentConfig {
       - valid values
       - the default value
 
+.PARAMETER ServicePrincipalID
+    The application ID of the Service Principal used by Terraform (and the AKS cluster) to access Azure.
+
+.PARAMETER ServicePrincipalSecret
+    The password of the Service Principal used by Terraform (and the AKS cluster) to access Azure.
+
+.PARAMETER AzureTenantID
+    The ID of the Azure AD tenant where the Terraform Service Principal (and the target subscription) live.
+
+.PARAMETER Subscription
+    The name of the Azure subscription where the AKS instance (and other Azure resources) will be deployed.
+
+.PARAMETER ClusterLocation
+    The Azure region where the AKS cluster (and other Azure resources) will be deployed.
+
 .PARAMETER Path
     The path of the deployment config file to generate.
     Preferably, the file extension should be .psd1 to reflect its content : PowerShell data.
 
 .EXAMPLE
+    PS C:\> $ScaffoldParams = @{
+        ServicePrincipalID = '29x1ecd3-190f-42c9-8660-088f69d121ba'
+        ServicePrincipalSecret = 'tsWpRr6/YCxNyh8efMvjWbe5JoOiOw03xR1o9S5CLhZ='
+        AzureTenantID = '96v3b174-9cdb-4a5e-9177-18c3bccc87cb'
+        Subscription = 'DevOps'
+        ClusterLocation = 'North Europe'
+        Path = '.\TestScaffold.psd1'
+    }
+    PS C:\> New-AksDeploymentConfig @ScaffoldParams
 
 #>
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory, Position=0)]
+        [string]$ServicePrincipalID,
+
+        [Parameter(Mandatory, Position=1)]
+        [string]$ServicePrincipalSecret,
+
+        [Parameter(Mandatory, Position=2)]
+        [string]$AzureTenantID,
+
+        [Parameter(Mandatory, Position=3)]
+        [string]$Subscription,
+
+        [Parameter(Mandatory, Position=4)]
+        [string]$ClusterLocation,
+
+        [Parameter(Mandatory, Position=5)]
         [ValidateScript({ Test-Path -Path (Split-Path $_ -Parent) -PathType Container })]
         [string]$Path
     )
@@ -34,17 +73,38 @@ Function New-AksDeploymentConfig {
     [System.Collections.ArrayList]$ParameterData = @()
     Foreach ( $Parameter in $Parameters ) {
         Write-ConsoleLog "Gathering metadata for parameter : $($Parameter.Name)"
-
         $DefaultValue = $ParameterHelp = $ValidValues = $Null
-        If ( -not($Parameter.IsDynamic) ) {
-            $ParameterHelp = Get-Help Invoke-AksDeployment -Parameter $Parameter.Name
-            $DefaultValue = $ParameterHelp.DefaultValue -as [string]
-            If ( $ParameterHelp.Type.Name -eq 'String' ) {
-                $DefaultValue = '"{0}"' -f $DefaultValue
-            }
+
+        $ParameterHelp = Get-Help Invoke-AksDeployment -Parameter $Parameter.Name
+        $DefaultValue = $ParameterHelp.DefaultValue -as [string]
+        If ( $ParameterHelp.Type.Name -eq 'String' ) {
+            $DefaultValue = '"{0}"' -f $DefaultValue
         }
 
-        If ( $Parameter.Attributes.ValidValues ) {
+        If ( $Parameter.Name -eq 'Subscription' ) {
+            $ValidValuesArray = @(Get-SubscriptionNames $AzureTenantID $ServicePrincipalID $ServicePrincipalSecret).ForEach({ '"{0}"' -f $_ })
+            $ValidValues = $ValidValuesArray -join ', '
+        }
+        ElseIf ( $Parameter.Name -eq 'ClusterLocation' ) {
+            $ValidValuesArray = @(Get-AksLocations $AzureTenantID $ServicePrincipalID $ServicePrincipalSecret).ForEach({ '"{0}"' -f $_ })
+            $ValidValues = $ValidValuesArray -join ', '
+        }
+        ElseIf ( $Parameter.Name -eq 'LogAnalyticsWorkspaceLocation' ) {
+            $ValidValuesArray = @(Get-LogAnalyticsLocations $AzureTenantID $ServicePrincipalID $ServicePrincipalSecret).ForEach({ '"{0}"' -f $_ })
+            $ValidValues = $ValidValuesArray -join ', '
+        }
+        ElseIf ( $Parameter.Name -eq 'KubernetesVersion' ) {
+            $K8sVersionParams = @{
+                AzureTenantID          = $AzureTenantID
+                Subscription           = $Subscription
+                ServicePrincipalID     = $ServicePrincipalID
+                ServicePrincipalSecret = $ServicePrincipalSecret
+                ClusterLocation        = $ClusterLocation
+            }
+            $ValidValuesArray = @(Get-KubernetesVersions @K8sVersionParams).ForEach({ '"{0}"' -f $_ })
+            $ValidValues = $ValidValuesArray -join ', '
+        }
+        ElseIf ( $Parameter.Attributes.ValidValues ) {
             $ValidValuesArray = @($Parameter.Attributes.ValidValues).ForEach({ '"{0}"' -f $_ })
             $ValidValues = $ValidValuesArray -join ', '
         }
@@ -58,12 +118,12 @@ Function New-AksDeploymentConfig {
             $ValidValues = ''
         }
 
-        $ObjectProperties = [ordered]@{
-            Name           = $Parameter.Name
-            Description    = If ( $ParameterHelp ) {$ParameterHelp.Description.Text} Else {''}
-            Type           = If ( $ParameterHelp ) {$ParameterHelp.Type.Name} Else {''}
-            DefaultValue   = If ( $DefaultValue ) {$DefaultValue} Else {'""'}
-            ValidValues    = [string]$ValidValues
+        $ObjectProperties = @{
+            Name         = $Parameter.Name
+            Description  = $ParameterHelp.Description.Text
+            Type         = $ParameterHelp.Type.Name
+            DefaultValue = If ( $DefaultValue ) {$DefaultValue} Else {'""'}
+            ValidValues  = $ValidValues
         }
 
         $ParameterDataObject = New-Object -TypeName PSObject -Property $ObjectProperties
