@@ -3,7 +3,17 @@ pool:
   vmImage: 'vs2017-win2016'
 
 steps:
-- powershell: Get-Module -Name 'Pester' -ListAvailable
+- powershell: |
+ Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
+ Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
+ Install-Module -Name 'Pester' -Scope CurrentUser -Force -SkipPublisherCheck
+ Import-Module 'Pester' -Force
+  displayName: Install Build Dependencies
+  name: installDependencies
+  workingDirectory: $(build.sourcesDirectory)
+  failOnStderr: true
+
+- powershell: Get-Module -Name 'Pester'
   displayName: Checking installed Pester version
   name: checkPesterVersion
   workingDirectory: $(build.sourcesDirectory)
