@@ -1,0 +1,10 @@
+name: "0.1$(Rev:.r)"
+pool:
+  vmImage: 'vs2017-win2016'
+
+steps:
+- powershell: Get-Module -Name 'Pester' -ListAvailable
+  displayName: Checking installed Pester version
+  name: checkPesterVersion
+  workingDirectory: $(build.sourcesDirectory)
+  failOnStderr: true
