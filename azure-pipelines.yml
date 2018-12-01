@@ -7,14 +7,25 @@ steps:
     Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
     Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
     Install-Module -Name 'Pester' -Scope CurrentUser -Force -SkipPublisherCheck
-    Import-Module 'Pester' -Force
   displayName: Install Build Dependencies
   name: installDependencies
   workingDirectory: $(build.sourcesDirectory)
   failOnStderr: true
 
-- powershell: Get-Module -Name 'Pester'
+- powershell: Get-Module -Name 'Pester' -ListAvailable
   displayName: Checking installed Pester version
   name: checkPesterVersion
+  workingDirectory: $(build.sourcesDirectory)
+  failOnStderr: true
+
+- powershell: |
+    $UnitTestParams = @{
+      Script       = './Tests/Unit'
+      Strict       = $True
+      OutputFile   = '$(Common.TestResultsDirectory)/UnitTestResults.xml'
+    }
+    Invoke-Pester @UnitTestParams
+  displayName: Run Unit Tests
+  name: unitTests
   workingDirectory: $(build.sourcesDirectory)
   failOnStderr: true
