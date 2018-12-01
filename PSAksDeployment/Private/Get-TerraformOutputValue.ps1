@@ -5,7 +5,7 @@ Function Get-TerraformOutputValue {
         [string]$OutputKey
     )
 
-    $OutputJson = & terraform.exe --% output -no-color -json
+    $OutputJson = & terraform --% output -no-color -json
     $OutputObj = $OutputJson | ConvertFrom-Json
     $OutputObj.$OutputKey.value
 }

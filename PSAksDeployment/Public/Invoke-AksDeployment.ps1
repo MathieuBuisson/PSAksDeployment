@@ -110,8 +110,7 @@ Function Invoke-AksDeployment {
         [string]$LogAnalyticsWorkspaceLocation,
 
         [Parameter(Mandatory=$False, Position=7, ParameterSetName='InputsFromParameters')]
-        [ValidateSet('1.9.10', '1.9.11', '1.10.7', '1.10.8', '1.11.2', '1.11.3', '1.11.4')]
-        [string]$KubernetesVersion = '1.11.4',
+        [string]$KubernetesVersion = '1.11.5',
 
         [Parameter(Mandatory=$False, Position=8, ParameterSetName='InputsFromParameters')]
         [ValidateRange(1, 100)]

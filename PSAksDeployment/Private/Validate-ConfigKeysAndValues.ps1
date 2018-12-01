@@ -38,6 +38,20 @@ Function Validate-ConfigKeysAndValues {
                 Throw "$($Config[$Parameter.Name]) is not one of the valid values : $($ValidLogAnalyticsLocations -join ', ')"
             }
         }
+        ElseIf ( $Parameter.Name -eq 'KubernetesVersion' ) {
+            $K8sVersionParams = @{
+                AzureTenantID          = $Config['AzureTenantID']
+                Subscription           = $Config['Subscription']
+                ServicePrincipalID     = $Config['ServicePrincipalID']
+                ServicePrincipalSecret = $Config['ServicePrincipalSecret']
+                ClusterLocation        = $Config['ClusterLocation']
+            }
+            $ValidK8sVersions = Get-KubernetesVersions @K8sVersionParams
+
+            If ( $Config[$Parameter.Name] -notin $ValidK8sVersions ) {
+                Throw "$($Config[$Parameter.Name]) is not one of the valid values : $($ValidK8sVersions -join ', ')"
+            }
+        }
         ElseIf ( $Parameter.Attributes.ValidValues ) {
             $ValidSet = $Parameter.Attributes.ValidValues
             If ( $Config[$Parameter.Name] -notin $ValidSet ) {
