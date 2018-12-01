@@ -4,10 +4,10 @@ pool:
 
 steps:
 - powershell: |
- Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
- Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
- Install-Module -Name 'Pester' -Scope CurrentUser -Force -SkipPublisherCheck
- Import-Module 'Pester' -Force
+    Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
+    Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
+    Install-Module -Name 'Pester' -Scope CurrentUser -Force -SkipPublisherCheck
+    Import-Module 'Pester' -Force
   displayName: Install Build Dependencies
   name: installDependencies
   workingDirectory: $(build.sourcesDirectory)
