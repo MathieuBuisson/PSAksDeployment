@@ -15,12 +15,6 @@ steps:
   workingDirectory: $(build.sourcesDirectory)
   failOnStderr: true
 
-- powershell: Get-Module -Name 'Pester' -ListAvailable
-  displayName: Checking installed Pester version
-  name: checkPesterVersion
-  workingDirectory: $(build.sourcesDirectory)
-  failOnStderr: true
-
 - powershell: |
     $UnitTestParams = @{
       Script       = './Tests/Unit'
@@ -32,3 +26,12 @@ steps:
   name: unitTests
   workingDirectory: $(build.sourcesDirectory)
   failOnStderr: true
+
+- task: PublishTestResults@2
+  displayName: Publish Test Results
+  inputs:
+    testRunner: NUnit
+    testResultsFiles: '*TestResults.xml'
+    searchFolder: '$(Common.TestResultsDirectory)'
+    mergeTestResults: true
+    testRunTitle: 'CI Tests'
