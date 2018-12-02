@@ -20,13 +20,12 @@ Describe 'General Module behaviour' {
         $ModuleInfo.RootModule -like '*{0}.psm1' -f $ModuleName |
             Should -Be $True
     }
-    It 'Exports all functions located in the "Public" subfolder' {
-        $PublicFolder = Join-Path -Path $ModuleInfo.ModuleBase -ChildPath 'Public'
-        $ExpectedFunctions = (Get-ChildItem $PublicFolder -File).BaseName
-        $ExportedFunctions = $ModuleInfo.ExportedFunctions.Values.Name
 
-        Foreach ( $FunctionName in $ExpectedFunctions ) {
-            $FunctionName | Should -BeIn $ExportedFunctions
+    $PublicFolder = Join-Path -Path $ModuleInfo.ModuleBase -ChildPath 'Public'
+    $ExportedFunctions = $ModuleInfo.ExportedFunctions.Values.Name
+    Foreach ( $ExpectedFunction in ((Get-ChildItem $PublicFolder -File).BaseName) ) {
+        It "Exports function [$ExpectedFunction]" {
+            $ExpectedFunction | Should -BeIn $ExportedFunctions
         }
     }
 }

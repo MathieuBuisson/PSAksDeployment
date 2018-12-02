@@ -25,7 +25,7 @@
     # ScriptsToProcess = @()
 
     # Functions to export from this module
-    FunctionsToExport = @('Invoke-PSAksDeployment', 'New-PSAksDeploymentConfig')
+    FunctionsToExport = @('Invoke-PSAksDeployment', 'New-PSAksDeploymentConfig', 'Install-PSAksPrerequisites')
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
     PrivateData = @{
