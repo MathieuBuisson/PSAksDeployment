@@ -1,10 +1,10 @@
-Function New-AksDeploymentConfig {
+Function New-PSAksDeploymentConfig {
 <#
 .SYNOPSIS
-    Scaffolds a PowerShell data file (.psd1) containing all input parameters for the cmdlet Invoke-AksDeployment.
+    Scaffolds a PowerShell data file (.psd1) containing all input parameters for the cmdlet Invoke-PSAksDeployment.
 
 .DESCRIPTION
-    Scaffolds a PowerShell data file (.psd1) containing all input parameters for the cmdlet Invoke-AksDeployment.
+    Scaffolds a PowerShell data file (.psd1) containing all input parameters for the cmdlet Invoke-PSAksDeployment.
     It tries to be as helpful as possible by prepopulating the following for each parameter :
       - a description
       - the data type
@@ -39,7 +39,7 @@ Function New-AksDeploymentConfig {
         ClusterLocation = 'North Europe'
         Path = '.\TestScaffold.psd1'
     }
-    PS C:\> New-AksDeploymentConfig @ScaffoldParams
+    PS C:\> New-PSAksDeploymentConfig @ScaffoldParams
 
 #>
     [CmdletBinding()]
@@ -64,7 +64,7 @@ Function New-AksDeploymentConfig {
         [string]$Path
     )
 
-    $CmdData = Get-Command Invoke-AksDeployment
+    $CmdData = Get-Command Invoke-PSAksDeployment
     $Parameters = $CmdData.Parameters.Values
     $Parameters = $Parameters | Where-Object { $_.Attributes.ParameterSetName -eq 'InputsFromParameters' }
     $CommonParams = @( ([System.Management.Automation.PSCmdlet]::CommonParameters) + ([System.Management.Automation.PSCmdlet]::OptionalCommonParameters) )
@@ -75,7 +75,7 @@ Function New-AksDeploymentConfig {
         Write-ConsoleLog "Gathering metadata for parameter : $($Parameter.Name)"
         $DefaultValue = $ParameterHelp = $ValidValues = $Null
 
-        $ParameterHelp = Get-Help Invoke-AksDeployment -Parameter $Parameter.Name
+        $ParameterHelp = Get-Help Invoke-PSAksDeployment -Parameter $Parameter.Name
         $DefaultValue = $ParameterHelp.DefaultValue -as [string]
         If ( $ParameterHelp.Type.Name -eq 'String' ) {
             $DefaultValue = '"{0}"' -f $DefaultValue

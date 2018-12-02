@@ -1,4 +1,4 @@
-Function Invoke-AksDeployment {
+Function Invoke-PSAksDeployment {
 <#
 .SYNOPSIS
     Performs the provisioning and initial configuration of an Azure Kubernetes Service (AKS) cluster.
@@ -71,16 +71,16 @@ Function Invoke-AksDeployment {
 
 .PARAMETER ConfigPath
     To specify all input parameters from a PowerShell data file, instead of at the command line.
-    It is recommended to scaffold this file using "New-AksDeploymentConfig" and then, populate/adjust values to your needs.
+    It is recommended to scaffold this file using "New-PSAksDeploymentConfig" and then, populate/adjust values to your needs.
     CAUTION : Do not keep this file in source control after populating sensitive data, like the Service Principal secret.
 
 .EXAMPLE
-    PS C:\> Invoke-AKSDeployment -ClusterLocation 'North Europe' -Subscription 'InfraDev' -ServicePrincipalSecret 'zaWpRr9/YCxNyh8efMvjWbe5JoOiOw03xR1o9S5CLhY=' -ClusterName 'infradev-k8s' -LogAnalyticsWorkspaceLocation 'West Europe' -NodeCount 4
+    PS C:\> Invoke-PSAksDeployment -ClusterLocation 'North Europe' -Subscription 'InfraDev' -ServicePrincipalSecret 'zaWpRr9/YCxNyh8efMvjWbe5JoOiOw03xR1o9S5CLhY=' -ClusterName 'infradev-k8s' -LogAnalyticsWorkspaceLocation 'West Europe' -NodeCount 4
 
     Provisions and configures an AKS cluster according to the parameter values specified at the command line.
 
 .EXAMPLE
-    PS C:\> Invoke-AKSDeployment -ConfigPath ./Dev_Config.psd1
+    PS C:\> Invoke-PSAksDeployment -ConfigPath ./Dev_Config.psd1
 
     Provisions and configures an AKS cluster according to the parameter values in the file "Dev_Config.psd1" in the current directory.
 #>

@@ -7,7 +7,7 @@ Function Validate-ConfigKeysAndValues {
 
     $ConfigKeys = $Config.Keys
     Write-ConsoleLog "Validating that the config has all expected keys"
-    $CmdData = Get-Command Invoke-AksDeployment
+    $CmdData = Get-Command Invoke-PSAksDeployment
     $Parameters = $CmdData.Parameters.Values
     $Parameters = $Parameters | Where-Object { $_.Attributes.ParameterSetName -eq 'InputsFromParameters' }
 

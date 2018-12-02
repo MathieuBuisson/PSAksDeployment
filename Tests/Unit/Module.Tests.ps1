@@ -21,7 +21,8 @@ Describe 'General Module behaviour' {
             Should -Be $True
     }
     It 'Exports all functions located in the "Public" subfolder' {
-        $ExpectedFunctions = (Get-ChildItem -Path "$PSScriptRoot\..\..\PSAksDeployment\Public" -File).BaseName
+        $PublicFolder = Join-Path -Path $ModuleInfo.ModuleBase -ChildPath 'Public'
+        $ExpectedFunctions = (Get-ChildItem $PublicFolder -File).BaseName
         $ExportedFunctions = $ModuleInfo.ExportedFunctions.Values.Name
 
         Foreach ( $FunctionName in $ExpectedFunctions ) {
