@@ -99,4 +99,9 @@ Function Install-PSAksPrerequisites {
         $HelmUrl = 'https://storage.googleapis.com/kubernetes-helm/helm-v{0}-windows-amd64.zip' -f $HelmVersion
         Save-PSAksPrerequisite -Uri $HelmUrl -Path $InstallationFolder
     }
+
+    $PathArray = ($Env:Path -split ';').ForEach({ $_.TrimEnd('/\') })
+    If ( $InstallationFolder.TrimEnd('/\') -notin $PathArray ) {
+        Add-PathEnvironmentVariable -PathToAdd $InstallationFolder
+    }
 }
