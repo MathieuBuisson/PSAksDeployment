@@ -12,4 +12,18 @@ Foreach ( $Import in @($Public + $Private) ) {
 }
 $Script:ExternalHelpCommandNames = @()
 
+# Getting persistent data whenever the module is imported
+$DataFilePath = Join-Path -Path "$Env:APPDATA" -ChildPath 'PSAksDeployment/ModuleData.psd1'
+If ( Test-Path -Path $DataFilePath -PathType Leaf ) {
+    $FileData = Import-PowerShellDataFile -Path $DataFilePath
+
+    $FileInstallationFolder = ($FileData['InstallationFolder']).TrimEnd('/\')
+    Write-Verbose "InstallationFolder read from module data file : $FileInstallationFolder"
+
+    $PathArray = ($Env:Path -split ';').ForEach({ $_.TrimEnd('/\') })
+    If ( $FileInstallationFolder -notin $PathArray ) {
+        Add-PathEnvironmentVariable -PathToAdd $FileInstallationFolder
+    }
+}
+
 Export-ModuleMember -Function $Public.Basename

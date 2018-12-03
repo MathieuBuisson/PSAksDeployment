@@ -103,5 +103,11 @@ Function Install-PSAksPrerequisites {
     $PathArray = ($Env:Path -split ';').ForEach({ $_.TrimEnd('/\') })
     If ( $InstallationFolder.TrimEnd('/\') -notin $PathArray ) {
         Add-PathEnvironmentVariable -PathToAdd $InstallationFolder
+
+        # Persisting the value of $InstallationFolder for subsequent module imports
+        $DataFilePath = Join-Path -Path "$Env:APPDATA" -ChildPath 'PSAksDeployment/ModuleData.psd1'
+        Write-ConsoleLog "Persisting `$InstallationFolder to [$DataFilePath]"
+        $DataFileContent = "@{`n`tInstallationFolder = '$InstallationFolder'`n}"
+        $Null = New-Item -Path $DataFilePath -ItemType File -Value $DataFileContent -Force
     }
 }
