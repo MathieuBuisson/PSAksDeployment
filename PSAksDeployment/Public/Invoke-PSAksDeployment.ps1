@@ -175,7 +175,7 @@ Function Invoke-PSAksDeployment {
         Write-ConsoleLog "Input Node size [$NodeSize] maps to : $NodeVMSize"
 
         Set-TerraformBackendPaths -RootFolder $TerraformOutputFolder -ClusterName $ClusterName
-        Initialize-TerraformConfigAks
+        Initialize-TerraformConfigAks $TerraformOutputFolder -ClusterName $ClusterName
 
         $AKSConfigParams = @{
             SubscriptionId                = $SelectedSubscription.Subscription.Id
