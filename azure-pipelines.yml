@@ -9,7 +9,7 @@ variables:
   deploy_node_count: 2
   deploy_node_size: D_2vCPU_8GB
   deploy_letsEncrypt_email: ci-$(Build.BuildId)@gmail.com
-  deploy_aks_config_path: $(Build.SourcesDirectory)/PSAksDeployment/PSAksDeployment/TerraformConfigs/aks
+  deploy_aks_config_path: $(Build.SourcesDirectory)/PSAksDeployment/TerraformConfigs/aks
   output_folder: $(Build.BinariesDirectory)
 
 steps:
@@ -38,7 +38,7 @@ steps:
   failOnStderr: true
 
 - powershell: |
-    Import-Module './PSAksDeployment/PSAksDeployment/PSAksDeployment.psd1' -Force
+    Import-Module './PSAksDeployment/PSAksDeployment.psd1' -Force
     Install-PSAksPrerequisites -InstallationFolder '$(output_folder)'
 
     $DeployParams = @{
