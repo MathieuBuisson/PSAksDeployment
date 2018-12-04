@@ -6,7 +6,7 @@ Function Validate-ConfigKeysAndValues {
 
         [Parameter(Mandatory=$False)]
         [ValidateSet('Invoke-PSAksDeployment', 'Remove-PSAksDeployment')]
-        [string]$CommandName = 'Invoke-PSAksDeployment',
+        [string]$CommandName = 'Invoke-PSAksDeployment'
     )
 
     $ConfigKeys = $Config.Keys
