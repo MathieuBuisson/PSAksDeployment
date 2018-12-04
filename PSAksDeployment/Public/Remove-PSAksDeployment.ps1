@@ -123,11 +123,11 @@ Function Remove-PSAksDeployment {
             Foreach ( $ConfigKey in $ConfigKeys ) {
                 $Config.Add($ConfigKey, (Get-Variable -Name $ConfigKey -ValueOnly))
             }
-            Validate-ConfigKeysAndValues -Config $Config
+            Validate-ConfigKeysAndValues -Config $Config -CommandName 'Remove-PSAksDeployment'
         }
         ElseIf ( $PSCmdlet.ParameterSetName -eq 'InputsFromConfigFile' ) {
             $Config = Import-PowerShellDataFile -Path $ConfigPath
-            Validate-ConfigKeysAndValues -Config $Config
+            Validate-ConfigKeysAndValues -Config $Config -CommandName 'Remove-PSAksDeployment'
 
             Foreach ( $ConfigKey in $Config.Keys ) {
                 New-Variable -Name $ConfigKey -Value $Config[$ConfigKey] -Visibility Public -Force

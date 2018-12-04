@@ -2,12 +2,16 @@ Function Validate-ConfigKeysAndValues {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory)]
-        [Hashtable]$Config
+        [Hashtable]$Config,
+
+        [Parameter(Mandatory=$False)]
+        [ValidateSet('Invoke-PSAksDeployment', 'Remove-PSAksDeployment')]
+        [string]$CommandName = 'Invoke-PSAksDeployment',
     )
 
     $ConfigKeys = $Config.Keys
     Write-ConsoleLog "Validating that the config has all expected keys"
-    $CmdData = Get-Command Invoke-PSAksDeployment
+    $CmdData = Get-Command -Name $CommandName
     $Parameters = $CmdData.Parameters.Values
     $Parameters = $Parameters | Where-Object { $_.Attributes.ParameterSetName -eq 'InputsFromParameters' }
 
