@@ -4,7 +4,7 @@
     RootModule = './PSAksDeployment.psm1'
 
     # Version number of this module.
-    ModuleVersion = '0.0.1'
+    ModuleVersion = '0.0.2'
 
     # ID used to uniquely identify this module
     GUID = '87acffec-ab85-4cd3-904b-9aaee7696e28'
@@ -25,7 +25,7 @@
     # ScriptsToProcess = @()
 
     # Functions to export from this module
-    FunctionsToExport = @('Invoke-PSAksDeployment', 'New-PSAksDeploymentConfig', 'Install-PSAksPrerequisites')
+    FunctionsToExport = @('Invoke-PSAksDeployment', 'New-PSAksDeploymentConfig', 'Install-PSAksPrerequisites', 'Remove-PSAksDeployment')
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
     PrivateData = @{
