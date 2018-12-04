@@ -64,7 +64,7 @@ steps:
     DEPLOY_SP_SECRET: $(deploy_sp_secret)
     DEPLOY_TENANT_ID: $(deploy_tenant_id)
 
-- powershell: "& terraform --% destroy -auto-approve -no-color"
+- powershell: "& $(output_folder)/terraform --% destroy -auto-approve -no-color"
   displayName: Cleanup Deployed Resources
   name: cleanupDeployment
   workingDirectory: $(deploy_aks_config_path)
