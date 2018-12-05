@@ -70,6 +70,18 @@ jobs:
       DEPLOY_TENANT_ID: $(deploy_tenant_id)
 
   - powershell: |
+      $SystemTestParams = @{
+        Script       = './Tests/System'
+        Strict       = $True
+        OutputFile   = '$(Common.TestResultsDirectory)/SystemTestResults.xml'
+      }
+      Invoke-Pester @SystemTestParams
+    displayName: Run System Tests
+    name: systemTests
+    workingDirectory: $(Build.SourcesDirectory)
+    failOnStderr: true
+
+  - powershell: |
       Import-Module './$(module_name)/$(module_name).psd1' -Force
       $RemoveParams = @{
           AzureTenantID = "$Env:DEPLOY_TENANT_ID"

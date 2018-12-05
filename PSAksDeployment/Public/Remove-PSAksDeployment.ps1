@@ -68,7 +68,7 @@ Function Remove-PSAksDeployment {
 
     If ( $RG ) {
         Write-ConsoleLog "Deleting resource group [$RGName], this may take several minutes..."
-        $RG | Remove-AzResourceGroup -Force
+        $RG | Remove-AzResourceGroup -Force -Verbose
     }
     Else {
         Throw "Could not find resource group [$RGName] in subscription [$Subscription]"
