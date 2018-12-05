@@ -1,97 +1,98 @@
 name: "0.1$(Rev:.r)"
-pool:
-  vmImage: 'vs2017-win2016'
-variables:
-  module_name: PSAksDeployment
-  deploy_cluster_location: North Europe
-  deploy_log_analytics_location: West Europe
-  deploy_cluster_name: psaks-ci-$(Build.BuildId)
-  deploy_resource_group: psaks-ci-$(Build.BuildId)-rg
-  deploy_node_count: 2
-  deploy_node_size: D_2vCPU_8GB
-  deploy_letsEncrypt_email: ci-$(Build.BuildId)@gmail.com
-  output_folder: $(Build.BinariesDirectory)
+jobs:
 
-steps:
-- powershell: |
-    Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
-    Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
-    Install-Module -Name 'Pester' -Scope CurrentUser -Force -SkipPublisherCheck
-    Install-Module -Name 'Az.Profile' -Scope CurrentUser -Force
-    Install-Module -Name 'Az.Resources' -Scope CurrentUser -Force
-    Install-Module -Name 'Az.Aks' -Scope CurrentUser -Force
-  displayName: Install Build Dependencies
-  name: installDependencies
-  workingDirectory: $(Build.SourcesDirectory)
-  failOnStderr: true
+- job: build_windows_2016
+  displayName: Build on Windows 2016 agent
+  timeoutInMinutes: 90
+  pool:
+    vmImage: 'vs2017-win2016'    
+  variables:
+    module_name: PSAksDeployment
+    deploy_cluster_location: North Europe
+    deploy_log_analytics_location: West Europe
+    deploy_cluster_name: psaks-ci-$(Build.BuildId)
+    deploy_resource_group: psaks-ci-$(Build.BuildId)-rg
+    deploy_node_count: 2
+    deploy_node_size: D_2vCPU_8GB
+    deploy_letsEncrypt_email: ci-$(Build.BuildId)@gmail.com
+    output_folder: $(Build.BinariesDirectory)
 
-- powershell: |
-    $UnitTestParams = @{
-      Script       = './Tests/Unit'
-      Strict       = $True
-      OutputFile   = '$(Common.TestResultsDirectory)/UnitTestResults.xml'
-    }
-    Invoke-Pester @UnitTestParams
-  displayName: Run Unit Tests
-  name: unitTests
-  workingDirectory: $(Build.SourcesDirectory)
-  failOnStderr: true
+  steps:
+  - powershell: |
+      Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
+      Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
+      Install-Module -Name 'Pester' -Scope CurrentUser -Force -SkipPublisherCheck
+      Install-Module -Name 'Az.Profile' -Scope CurrentUser -Force
+      Install-Module -Name 'Az.Resources' -Scope CurrentUser -Force
+      Install-Module -Name 'Az.Aks' -Scope CurrentUser -Force
+    displayName: Install Build Dependencies
+    name: installDependencies
+    workingDirectory: $(Build.SourcesDirectory)
+    failOnStderr: true
 
-- powershell: |
-    Import-Module './$(module_name)/$(module_name).psd1' -Force
-    Install-PSAksPrerequisites -InstallationFolder '$(output_folder)'
+  - powershell: |
+      $UnitTestParams = @{
+        Script       = './Tests/Unit'
+        Strict       = $True
+        OutputFile   = '$(Common.TestResultsDirectory)/UnitTestResults.xml'
+      }
+      Invoke-Pester @UnitTestParams
+    displayName: Run Unit Tests
+    name: unitTests
+    workingDirectory: $(Build.SourcesDirectory)
+    failOnStderr: true
 
-    $DeployParams = @{
-        Subscription = '$(deploy_subscription)'
-        ClusterLocation = '$(deploy_cluster_location)'
-        LogAnalyticsWorkspaceLocation = '$(deploy_log_analytics_location)'
-        ServicePrincipalID = "$Env:DEPLOY_SP_ID"
-        ServicePrincipalSecret = "$Env:DEPLOY_SP_SECRET"
-        AzureTenantID = "$Env:DEPLOY_TENANT_ID"
-        ClusterName = '$(deploy_cluster_name)'
-        NodeCount = $(deploy_node_count)
-        NodeSize = '$(deploy_node_size)'
-        LetsEncryptEmail = '$(deploy_letsEncrypt_email)'
-        TerraformOutputFolder = '$(output_folder)'
-    }
-    Invoke-PSAksDeployment @DeployParams
-  displayName: Run a Deployment
-  name: deployment
-  workingDirectory: $(Build.SourcesDirectory)
-  failOnStderr: true
-  env:
-    DEPLOY_SP_ID: $(deploy_sp_id)
-    DEPLOY_SP_SECRET: $(deploy_sp_secret)
-    DEPLOY_TENANT_ID: $(deploy_tenant_id)
+  - powershell: |
+      Import-Module './$(module_name)/$(module_name).psd1' -Force
+      Install-PSAksPrerequisites -InstallationFolder '$(output_folder)'
 
-- powershell: |
-    Import-Module './$(module_name)/$(module_name).psd1' -Force
-    $RemoveParams = @{
-        Subscription = '$(deploy_subscription)'
-        ClusterLocation = '$(deploy_cluster_location)'
-        LogAnalyticsWorkspaceLocation = '$(deploy_log_analytics_location)'
-        ServicePrincipalID = "$Env:DEPLOY_SP_ID"
-        ServicePrincipalSecret = "$Env:DEPLOY_SP_SECRET"
-        AzureTenantID = "$Env:DEPLOY_TENANT_ID"
-        ClusterName = '$(deploy_cluster_name)'
-        NodeCount = $(deploy_node_count)
-        NodeSize = '$(deploy_node_size)'
-    }
-    Remove-PSAksDeployment @RemoveParams
-  displayName: Cleanup Deployed Resources
-  name: cleanupDeployment
-  workingDirectory: $(Build.SourcesDirectory)
-  failOnStderr: true
-  env:
-    DEPLOY_SP_ID: $(deploy_sp_id)
-    DEPLOY_SP_SECRET: $(deploy_sp_secret)
-    DEPLOY_TENANT_ID: $(deploy_tenant_id)
+      $DeployParams = @{
+          Subscription = '$(deploy_subscription)'
+          ClusterLocation = '$(deploy_cluster_location)'
+          LogAnalyticsWorkspaceLocation = '$(deploy_log_analytics_location)'
+          ServicePrincipalID = "$Env:DEPLOY_SP_ID"
+          ServicePrincipalSecret = "$Env:DEPLOY_SP_SECRET"
+          AzureTenantID = "$Env:DEPLOY_TENANT_ID"
+          ClusterName = '$(deploy_cluster_name)'
+          NodeCount = $(deploy_node_count)
+          NodeSize = '$(deploy_node_size)'
+          LetsEncryptEmail = '$(deploy_letsEncrypt_email)'
+          TerraformOutputFolder = '$(output_folder)'
+      }
+      Invoke-PSAksDeployment @DeployParams
+    displayName: Run a Deployment
+    name: deployment
+    workingDirectory: $(Build.SourcesDirectory)
+    failOnStderr: true
+    env:
+      DEPLOY_SP_ID: $(deploy_sp_id)
+      DEPLOY_SP_SECRET: $(deploy_sp_secret)
+      DEPLOY_TENANT_ID: $(deploy_tenant_id)
 
-- task: PublishTestResults@2
-  displayName: Publish Test Results
-  inputs:
-    testRunner: NUnit
-    testResultsFiles: '*TestResults.xml'
-    searchFolder: '$(Common.TestResultsDirectory)'
-    mergeTestResults: true
-    testRunTitle: 'CI Tests'
+  - powershell: |
+      Import-Module './$(module_name)/$(module_name).psd1' -Force
+      $RemoveParams = @{
+          AzureTenantID = "$Env:DEPLOY_TENANT_ID"
+          ServicePrincipalID = "$Env:DEPLOY_SP_ID"
+          ServicePrincipalSecret = "$Env:DEPLOY_SP_SECRET"
+          Subscription = '$(deploy_subscription)'
+          ClusterName = '$(deploy_cluster_name)'
+      }
+      Remove-PSAksDeployment @RemoveParams
+    displayName: Cleanup Deployed Resources
+    name: cleanupDeployment
+    workingDirectory: $(Build.SourcesDirectory)
+    failOnStderr: true
+    env:
+      DEPLOY_SP_ID: $(deploy_sp_id)
+      DEPLOY_SP_SECRET: $(deploy_sp_secret)
+      DEPLOY_TENANT_ID: $(deploy_tenant_id)
+
+  - task: PublishTestResults@2
+    displayName: Publish Test Results
+    inputs:
+      testRunner: NUnit
+      testResultsFiles: '*TestResults.xml'
+      searchFolder: '$(Common.TestResultsDirectory)'
+      mergeTestResults: true
+      testRunTitle: 'CI Tests'
