@@ -5,7 +5,7 @@ jobs:
   displayName: Build on Windows 2016 agent
   timeoutInMinutes: 90
   pool:
-    vmImage: 'vs2017-win2016'    
+    vmImage: 'vs2017-win2016'
   variables:
     module_name: PSAksDeployment
     deploy_cluster_location: North Europe
@@ -35,8 +35,13 @@ jobs:
         Script       = './Tests/Unit'
         Strict       = $True
         OutputFile   = '$(Common.TestResultsDirectory)/UnitTestResults.xml'
+        PassThru = $True
       }
-      Invoke-Pester @UnitTestParams
+      $PesterOutput = Invoke-Pester @UnitTestParams
+      $FailedTestCount = $PesterOutput.FailedCount
+      If ( $FailedTestCount -gt 0 ) {
+        Throw "$($FailedTestCount) test(s) failed. Aborting this job."
+      }
     displayName: Run Unit Tests
     name: unitTests
     workingDirectory: $(Build.SourcesDirectory)
@@ -74,8 +79,13 @@ jobs:
         Script       = './Tests/System'
         Strict       = $True
         OutputFile   = '$(Common.TestResultsDirectory)/SystemTestResults.xml'
+        PassThru = $True
       }
-      Invoke-Pester @SystemTestParams
+      $PesterOutput = Invoke-Pester @SystemTestParams
+      $FailedTestCount = $PesterOutput.FailedCount
+      If ( $FailedTestCount -gt 0 ) {
+        Throw "$($FailedTestCount) test(s) failed. Aborting this job."
+      }
     displayName: Run System Tests
     name: systemTests
     workingDirectory: $(Build.SourcesDirectory)
