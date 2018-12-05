@@ -66,8 +66,8 @@ resource "helm_release" "nginx_ingress" {
   chart     = "stable/nginx-ingress"
   namespace = "${kubernetes_namespace.management.metadata.0.name}"
 
-  # Giving Azure 9min to create a load-balancer and assign the Public IP to it
-  timeout    = "540"
+  # Giving Azure 10min to create a load-balancer and assign the Public IP to it
+  timeout    = "600"
   depends_on = ["null_resource.helm_init"]
 
   values = [<<EOF
