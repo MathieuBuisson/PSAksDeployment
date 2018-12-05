@@ -3,9 +3,6 @@ Import-Module "$PSScriptRoot\..\..\$ModuleName\$($ModuleName).psd1" -Force
 
 Describe 'Kubernetes cluster' {
 
-    It 'Testing failure' {
-        $True | Should -BeFalse
-    }
     It 'Has a [management] namespace' {
         & kubectl get namespace management | Select-Object -Last 1 |
             Should -Match '^management\s+Active\s+'
@@ -53,12 +50,12 @@ Describe 'Certificate' {
 }
 
 Describe 'Secret propagator' {
-    
+
     It 'Status of release [secret-propagator] is "DEPLOYED"' {
         $PropagatorStatus = ConvertFrom-Json (helm status secret-propagator -o json)
         $PropagatorStatus.info.status.code | Should -Be 1
     }
-    
+
     $Namespaces = & kubectl get namespace --field-selector="status.phase==Active" -o=jsonpath="{range .items[*]}{.metadata.name}{';'}{end}"
     $NamespaceArray = $Namespaces.TrimEnd(';') -split ';'
 
