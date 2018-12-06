@@ -22,6 +22,6 @@ provider "local" {
 
 terraform {
   backend "local" {
-    path = "D:/a/1/b/TF_psaks-ci-144/StateFiles/k8s.tfstate"
+    path = "terraform.tfstate"
   }
 }

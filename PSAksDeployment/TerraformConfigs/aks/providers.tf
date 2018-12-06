@@ -11,6 +11,6 @@ provider "azurerm" {
 
 terraform {
   backend "local" {
-    path = "D:/a/1/b/TF_psaks-ci-144/StateFiles/aks.tfstate"
+    path = "terraform.tfstate"
   }
 }
