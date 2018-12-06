@@ -16,6 +16,7 @@ jobs:
     deploy_node_size: D_2vCPU_8GB
     deploy_letsEncrypt_email: ci-$(Build.BuildId)@gmail.com
     output_folder: $(Build.BinariesDirectory)
+    github_user: MathieuBuisson
 
   steps:
   - powershell: |
@@ -30,18 +31,7 @@ jobs:
     workingDirectory: $(Build.SourcesDirectory)
     failOnStderr: true
 
-  - powershell: |
-      $UnitTestParams = @{
-        Script       = './Tests/Unit'
-        Strict       = $True
-        OutputFile   = '$(Common.TestResultsDirectory)/UnitTestResults.xml'
-        PassThru = $True
-      }
-      $PesterOutput = Invoke-Pester @UnitTestParams
-      $FailedTestCount = $PesterOutput.FailedCount
-      If ( $FailedTestCount -gt 0 ) {
-        Throw "$($FailedTestCount) test(s) failed. Aborting this job."
-      }
+  - powershell: ./BuildScripts/Invoke-PesterTests.ps1 -TestSuite Unit
     displayName: Run Unit Tests
     name: unitTests
     workingDirectory: $(Build.SourcesDirectory)
@@ -74,18 +64,7 @@ jobs:
       DEPLOY_SP_SECRET: $(deploy_sp_secret)
       DEPLOY_TENANT_ID: $(deploy_tenant_id)
 
-  - powershell: |
-      $SystemTestParams = @{
-        Script       = './Tests/System'
-        Strict       = $True
-        OutputFile   = '$(Common.TestResultsDirectory)/SystemTestResults.xml'
-        PassThru = $True
-      }
-      $PesterOutput = Invoke-Pester @SystemTestParams
-      $FailedTestCount = $PesterOutput.FailedCount
-      If ( $FailedTestCount -gt 0 ) {
-        Throw "$($FailedTestCount) test(s) failed. Aborting this job."
-      }
+  - powershell: ./BuildScripts/Invoke-PesterTests.ps1 -TestSuite System
     displayName: Run System Tests
     name: systemTests
     workingDirectory: $(Build.SourcesDirectory)
@@ -118,3 +97,24 @@ jobs:
       searchFolder: '$(Common.TestResultsDirectory)'
       mergeTestResults: true
       testRunTitle: 'CI Tests'
+
+  - powershell: ./BuildScripts/Update-ModuleVersion.ps1 -NewVersion $(Build.BuildNumber)
+    displayName: Update Module Manifest Version
+    name: updateModuleVersion
+    workingDirectory: $(Build.SourcesDirectory)
+    failOnStderr: true
+
+  - powershell: ./BuildScripts/Push-ToGitRepository.ps1
+    displayName: Push CI changes
+    name: gitPush
+    workingDirectory: $(Build.SourcesDirectory)
+    failOnStderr: true
+    env:
+      GITHUB_PAT: $(github_pat)
+      EMAIL_ADDRESS: $(email_address)
+
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Module as Artifact
+    inputs:
+      PathtoPublish: $(module_name)
+      ArtifactName: Module
