@@ -1,4 +1,9 @@
 name: "0.1$(Rev:.r)"
+trigger:
+  paths:
+    exclude:
+    - PSAksDeployment/PSAksDeployment.psd1
+
 jobs:
 
 - job: build_windows_2016
