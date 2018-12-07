@@ -122,4 +122,4 @@ jobs:
     displayName: Publish Module as Artifact
     inputs:
       PathtoPublish: $(module_name)
-      ArtifactName: Module
+      ArtifactName: $(module_name)
