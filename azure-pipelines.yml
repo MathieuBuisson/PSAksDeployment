@@ -90,7 +90,8 @@ jobs:
           ClusterName = '$(deploy_cluster_name)'
       }
       Remove-PSAksDeployment @RemoveParams
-    displayName: Cleanup Deployed Resources
+      Remove-Item -Path './$(module_name)/TerraformConfigs/*/.terraform' -Recurse -Force -Confirm:$False
+    displayName: Cleanup Deployment
     name: cleanupDeployment
     workingDirectory: $(Build.SourcesDirectory)
     failOnStderr: true
