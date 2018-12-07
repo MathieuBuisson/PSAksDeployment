@@ -4,7 +4,7 @@
     RootModule = './PSAksDeployment.psm1'
 
     # Version number of this module.
-    ModuleVersion = '0.1.50'
+    ModuleVersion = '0.1.52'
 
     # ID used to uniquely identify this module
     GUID = '87acffec-ab85-4cd3-904b-9aaee7696e28'
