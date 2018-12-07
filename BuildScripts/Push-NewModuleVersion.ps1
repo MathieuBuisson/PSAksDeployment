@@ -1,6 +1,6 @@
 Param (
     [Parameter(Mandatory)]
-    [ValidateScript( { ($_ -as [System.Version]) -as [bool] })]
+    [ValidateScript({ ($_ -as [System.Version]) -as [bool] })]
     [string]$NewVersion,
 
     [Parameter(Mandatory=$False)]
