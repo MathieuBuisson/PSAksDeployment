@@ -1,8 +1,10 @@
 name: "0.1$(Rev:.r)"
 trigger:
   paths:
+    include:
+      - /
     exclude:
-    - PSAksDeployment/PSAksDeployment.psd1
+    - /PSAksDeployment/PSAksDeployment.psd1
 
 jobs:
 
