@@ -98,17 +98,11 @@ jobs:
       mergeTestResults: true
       testRunTitle: 'CI Tests'
 
-  - powershell: ./BuildScripts/Update-ModuleVersion.ps1 -NewVersion $(Build.BuildNumber)
-    displayName: Update Module Manifest Version
+  - powershell: ./BuildScripts/Push-NewModuleVersion.ps1 -NewVersion $(Build.BuildNumber)
+    displayName: Update Module Version
     name: updateModuleVersion
     workingDirectory: $(Build.SourcesDirectory)
-    failOnStderr: true
-
-  - powershell: ./BuildScripts/Push-ToGitRepository.ps1
-    displayName: Push CI changes
-    name: gitPush
-    workingDirectory: $(Build.SourcesDirectory)
-    failOnStderr: true
+    failOnStderr: false
     env:
       GITHUB_PAT: $(github_pat)
       EMAIL_ADDRESS: $(email_address)
