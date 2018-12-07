@@ -13,7 +13,7 @@
     Author = 'Mathieu Buisson'
 
     # Description of the functionality provided by this module
-    Description = 'This module exposes a PowerShell wrapper around Terraform to deploy and configure an Azure Kubernetes (AKS) cluster'
+    Description = 'This modules provides cmdlets to automate the deployment (and destruction) of Azure Kubernetes (AKS) clusters. It wraps other tools like : Terraform, Kubectl and Helm.'
 
     # Minimum version of the Windows PowerShell engine required by this module
     PowerShellVersion = '5.1'
@@ -32,7 +32,7 @@
 
         PSData = @{
             # Tags applied to this module. These help with module discovery in online galleries.
-            Tags = 'Azure', 'Kubernetes'
+            Tags = 'Azure', 'Kubernetes', 'Terraform'
 
             # A URL to the license for this module.
             LicenseUri = 'https://github.com/MathieuBuisson/PSAksDeployment/blob/master/LICENSE.md'
