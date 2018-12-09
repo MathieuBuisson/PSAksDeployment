@@ -108,10 +108,10 @@ ConfigPath
 ```
 
 You may be wondering :
-> What are these for ?
-> Which ones are mandatory ?
-> What is the default value ?
-> What are the possible values ?
+> What are these for ?  
+Which ones are mandatory ?  
+What is the default value ?  
+What are the possible values ?  
 
 You can get this information via the cmdlet help, for example :
 
@@ -233,7 +233,8 @@ PS C:\> Invoke-PSAksDeployment -ConfigPath '.\TestScaffold.psd1'
 
 Sit back and relax, the overall deployment takes around 20-25 minutes.
 
-When it completes, the usual tools to manage **Kubernetes** are ready to use. For example, you can list the deployments in the "management" namespace :
+When it completes, **Kubernetes** management tools are ready to work with your new cluster.  
+For example, you can list the deployments in the "management" namespace :
 
 ```powershell
 PS C:\> kubectl get deployment -n management
