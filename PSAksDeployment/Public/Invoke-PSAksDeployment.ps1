@@ -14,6 +14,7 @@ Function Invoke-PSAksDeployment {
       - Nginx ingress controller installation and configuration
       - cert-manager installation and configuration
       - a TLS certificate for the ingress controller (to support HTTPS)
+      - secret-propagator
 
     This function is mostly an input validation and orchestration layer on top of Terraform.
 
@@ -150,10 +151,10 @@ Function Invoke-PSAksDeployment {
 
         If ( $PSCmdlet.ParameterSetName -eq 'InputsFromParameters' ) {
             $ConfigKeys = ($PSCmdlet.MyInvocation.MyCommand.Parameters.Values | Where-Object { $_.Attributes.ParameterSetName -eq 'InputsFromParameters' }).Name
-			$Config = @{}
-			Foreach ( $ConfigKey in $ConfigKeys ) {
-				$Config.Add($ConfigKey, (Get-Variable -Name $ConfigKey -ValueOnly))
-			}
+            $Config = @{}
+            Foreach ( $ConfigKey in $ConfigKeys ) {
+                $Config.Add($ConfigKey, (Get-Variable -Name $ConfigKey -ValueOnly))
+            }
             Validate-ConfigKeysAndValues -Config $Config
         }
         ElseIf ( $PSCmdlet.ParameterSetName -eq 'InputsFromConfigFile' ) {

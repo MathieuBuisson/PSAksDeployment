@@ -52,7 +52,7 @@ jobs:
       Install-PSAksPrerequisites -InstallationFolder '$(output_folder)'
 
       $DeployParams = @{
-          Subscription = '$(deploy_subscription)'
+          Subscription = "$Env:DEPLOY_SUBSCRIPTION"
           ClusterLocation = '$(deploy_cluster_location)'
           LogAnalyticsWorkspaceLocation = '$(deploy_log_analytics_location)'
           ServicePrincipalID = "$Env:DEPLOY_SP_ID"
@@ -70,6 +70,7 @@ jobs:
     workingDirectory: $(Build.SourcesDirectory)
     failOnStderr: true
     env:
+      DEPLOY_SUBSCRIPTION: $(deploy_subscription)
       DEPLOY_SP_ID: $(deploy_sp_id)
       DEPLOY_SP_SECRET: $(deploy_sp_secret)
       DEPLOY_TENANT_ID: $(deploy_tenant_id)
@@ -86,7 +87,7 @@ jobs:
           AzureTenantID = "$Env:DEPLOY_TENANT_ID"
           ServicePrincipalID = "$Env:DEPLOY_SP_ID"
           ServicePrincipalSecret = "$Env:DEPLOY_SP_SECRET"
-          Subscription = '$(deploy_subscription)'
+          Subscription = "$Env:DEPLOY_SUBSCRIPTION"
           ClusterName = '$(deploy_cluster_name)'
       }
       Remove-PSAksDeployment @RemoveParams
@@ -96,6 +97,7 @@ jobs:
     workingDirectory: $(Build.SourcesDirectory)
     failOnStderr: true
     env:
+      DEPLOY_SUBSCRIPTION: $(deploy_subscription)
       DEPLOY_SP_ID: $(deploy_sp_id)
       DEPLOY_SP_SECRET: $(deploy_sp_secret)
       DEPLOY_TENANT_ID: $(deploy_tenant_id)
