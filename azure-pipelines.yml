@@ -33,9 +33,9 @@ jobs:
       Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
       Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
       Install-Module -Name 'Pester' -Scope CurrentUser -Force -SkipPublisherCheck
-      Install-Module -Name 'Az.Profile' -Scope CurrentUser -Force
-      Install-Module -Name 'Az.Resources' -Scope CurrentUser -Force
-      Install-Module -Name 'Az.Aks' -Scope CurrentUser -Force
+      Install-Module -Name 'Az.Profile' -Scope CurrentUser -Force -AllowClobber
+      Install-Module -Name 'Az.Resources' -Scope CurrentUser -Force -AllowClobber
+      Install-Module -Name 'Az.Aks' -Scope CurrentUser -Force -AllowClobber
     displayName: Install Build Dependencies
     name: installDependencies
     workingDirectory: $(Build.SourcesDirectory)
