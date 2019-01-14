@@ -3,15 +3,15 @@ output "log_analytics_workspace_name" {
 }
 
 output "kubernetes_master_FQDN" {
-  value = "${azurerm_template_deployment.aks.outputs["masterFQDN"]}"
+  value = "${azurerm_kubernetes_cluster.aks.fqdn}"
 }
 
 output "AKS_resource_ID" {
-  value = "${azurerm_template_deployment.aks.outputs["clusterID"]}"
+  value = "${azurerm_kubernetes_cluster.aks.id}"
 }
 
 output "AKS_infra_resource_group" {
-  value = "${azurerm_template_deployment.aks.outputs["infraResourceGroup"]}"
+  value = "${azurerm_kubernetes_cluster.aks.node_resource_group}"
 }
 
 output "ingressctrl_ip_address" {

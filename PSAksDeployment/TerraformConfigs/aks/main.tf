@@ -27,35 +27,55 @@ resource "azurerm_log_analytics_solution" "container" {
   }
 }
 
-resource "azurerm_template_deployment" "aks" {
-  name                = "${var.cluster_name}-deploy"
+resource "azurerm_kubernetes_cluster" "aks" {
+  name                = "${var.cluster_name}"
+  location            = "${azurerm_resource_group.aks.location}"
   resource_group_name = "${azurerm_resource_group.aks.name}"
-  template_body       = "${file("armTemplateAks.json")}"
+  dns_prefix          = "${var.cluster_name}"
+  kubernetes_version  = "${var.kubernetes_version}"
 
-  parameters {
-    "cluster_name"              = "${var.cluster_name}"
-    "location"                  = "${azurerm_resource_group.aks.location}"
-    "kubernetes_version"        = "${var.kubernetes_version}"
-    "agent_count"               = "${var.agent_count}"
-    "agent_vm_size"             = "${var.agent_vm_size}"
-    "os_disk_size_GB"           = "${var.os_disk_size_GB}"
-    "agent_max_pods"            = "${var.agent_max_pods}"
-    "client_id"                 = "${var.client_id}"
-    "client_secret"             = "${var.client_secret}"
-    "loganalytics_workspace_id" = "${azurerm_log_analytics_workspace.aks.id}"
-    "environment_tag"           = "${var.environment}"
+  agent_pool_profile {
+    name            = "agentpool"
+    count           = "${var.agent_count}"
+    vm_size         = "${var.agent_vm_size}"
+    os_type         = "Linux"
+    os_disk_size_gb = "${var.os_disk_size_GB}"
+    max_pods        = "${var.agent_max_pods}"
   }
 
-  depends_on      = ["azurerm_log_analytics_solution.container"]
-  deployment_mode = "Incremental"
+  service_principal {
+    client_id     = "${var.client_id}"
+    client_secret = "${var.client_secret}"
+  }
+
+  role_based_access_control {
+    enabled = true
+  }
+
+  network_profile {
+    network_plugin = "kubenet"
+  }
+
+  addon_profile {
+    oms_agent {
+      enabled                    = true
+      log_analytics_workspace_id = "${azurerm_log_analytics_workspace.aks.id}"
+    }
+  }
+
+  tags {
+    Environment = "${var.environment}"
+  }
+
+  depends_on = ["azurerm_log_analytics_solution.container"]
 }
 
 resource "azurerm_public_ip" "ingressctrl_ip" {
-  name                         = "${var.cluster_name}-ingressIP"
-  location                     = "${azurerm_resource_group.aks.location}"
-  resource_group_name          = "${azurerm_template_deployment.aks.outputs["infraResourceGroup"]}"
-  public_ip_address_allocation = "static"
-  domain_name_label            = "${var.cluster_name}"
+  name                = "${var.cluster_name}-ingressIP"
+  location            = "${azurerm_kubernetes_cluster.aks.location}"
+  resource_group_name = "${azurerm_kubernetes_cluster.aks.node_resource_group}"
+  allocation_method   = "Static"
+  domain_name_label   = "${var.cluster_name}"
 
   tags {
     environment = "${var.environment}"
