@@ -82,6 +82,9 @@ EOF
 resource "helm_release" "cert_manager" {
   name       = "cert-manager"
   chart      = "stable/cert-manager"
+  // Since v0.6.0, cert-manager Helm chart doesn't provide
+  // a good way of installing the cert-manager CRDs
+  version    = "v0.5.2"
   namespace  = "${kubernetes_namespace.management.metadata.0.name}"
   timeout    = "540"
   depends_on = ["helm_release.nginx_ingress"]
