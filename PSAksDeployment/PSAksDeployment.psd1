@@ -19,7 +19,7 @@
     PowerShellVersion = '5.1'
 
     # Modules that must be imported into the global environment prior to importing this module
-    RequiredModules   = @('Az.Profile', 'Az.Resources', 'Az.Aks')
+    RequiredModules   = @('Az.Accounts', 'Az.Resources', 'Az.Aks')
 
     # Script files (.ps1) that are run in the caller's environment prior to importing this module.
     # ScriptsToProcess = @()

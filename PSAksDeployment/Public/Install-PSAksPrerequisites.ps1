@@ -56,7 +56,7 @@ Function Install-PSAksPrerequisites {
         $Null = New-Item -Path $InstallationFolder -ItemType Directory -Force
     }
 
-    $RequiredPSModules = 'Az.Profile', 'Az.Resources', 'Az.Aks'
+    $RequiredPSModules = 'Az.Accounts', 'Az.Resources', 'Az.Aks'
     $PSPackageProvider = Get-PackageProvider -Name 'NuGet' -Force | Where-Object Version -gt ('2.8' -as [System.Version])
     If ( -not($PSPackageProvider) ) {
         Install-PackageProvider -Name NuGet -Force
