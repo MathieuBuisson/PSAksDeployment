@@ -41,7 +41,7 @@ Function Install-PSAksPrerequisites {
 
         [Parameter(Mandatory=$False, Position=1)]
         [ValidateScript({ ($_ -as [System.Version]) -as [bool] })]
-        [string]$TerraformVersion = '0.11.10',
+        [string]$TerraformVersion = '0.11.11',
 
         [Parameter(Mandatory=$False, Position=2)]
         [ValidateScript({ ($_ -as [System.Version]) -as [bool] })]
