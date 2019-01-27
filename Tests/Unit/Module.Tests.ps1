@@ -9,7 +9,7 @@ Describe 'General Module behaviour' {
     It 'The expected required modules are declared by the module' {
 
         Foreach ( $RequiredModule in $ModuleInfo.RequiredModules.Name ) {
-            $RequiredModule | Should -BeIn @('Az.Profile', 'Az.Resources', 'Az.Aks')
+            $RequiredModule | Should -BeIn @('Az.Accounts', 'Az.Resources', 'Az.Aks')
         }
     }
     It 'Has a valid manifest' {
