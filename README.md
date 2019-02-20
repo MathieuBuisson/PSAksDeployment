@@ -209,9 +209,9 @@ PS C:\> Get-Content .\TestScaffold.psd1
     <#
     The version of Kubernetes software running in the AKS Cluster.
     Type : String
-    Valid values : "1.8.14", "1.8.15", "1.9.10", "1.9.11", "1.10.8", "1.10.9", "1.11.4", "1.11.5"
+    Valid values : "1.9.10", "1.9.11", "1.10.9", "1.10.12", "1.11.6", "1.11.7", "1.12.4", "1.12.5"
     #>
-    KubernetesVersion = "1.11.5"
+    KubernetesVersion = "1.12.5"
 
     <#
     The number of worker nodes in the AKS cluster.
