@@ -61,6 +61,14 @@ resource "null_resource" "helm_init" {
   depends_on = ["kubernetes_cluster_role_binding.tiller"]
 }
 
+resource "null_resource" "helm_repo_update" {
+  provisioner "local-exec" {
+    command = "helm repo update"
+  }
+
+  depends_on = ["null_resource.helm_init"]
+}
+
 resource "helm_release" "nginx_ingress" {
   name      = "nginx-ingress"
   chart     = "stable/nginx-ingress"
@@ -68,7 +76,7 @@ resource "helm_release" "nginx_ingress" {
 
   # Giving Azure 10min to create a load-balancer and assign the Public IP to it
   timeout    = "600"
-  depends_on = ["null_resource.helm_init"]
+  depends_on = ["null_resource.helm_repo_update"]
 
   values = [<<EOF
   controller:
@@ -80,11 +88,13 @@ EOF
 }
 
 resource "helm_release" "cert_manager" {
-  name       = "cert-manager"
-  chart      = "stable/cert-manager"
+  name  = "cert-manager"
+  chart = "stable/cert-manager"
+
   // Since v0.6.0, cert-manager Helm chart doesn't provide
   // a good way of installing the cert-manager CRDs
-  version    = "v0.5.2"
+  version = "v0.5.2"
+
   namespace  = "${kubernetes_namespace.management.metadata.0.name}"
   timeout    = "540"
   depends_on = ["helm_release.nginx_ingress"]
@@ -110,7 +120,7 @@ EOF
 }
 
 data "template_file" "ingress_cert" {
-  template = "${file("..\\..\\Assets\\certificates.yaml.tpl")}"
+  template = "${file("../../Assets/certificates.yaml.tpl")}"
 
   vars {
     ingressctrl_fqdn = "${var.ingressctrl_fqdn}"
@@ -138,7 +148,7 @@ resource "null_resource" "ingress_cert_apply" {
 
 resource "null_resource" "ingress_cert_label" {
   provisioner "local-exec" {
-    command = "./Add-SecretLabel.ps1 -SecretName tls-secret -Namespace ${kubernetes_namespace.management.metadata.0.name}"
+    command     = "./Add-SecretLabel.ps1 -SecretName tls-secret -Namespace ${kubernetes_namespace.management.metadata.0.name}"
     interpreter = ["PowerShell", "-NoProfile", "-ExecutionPolicy", "ByPass", "-Command"]
   }
 
