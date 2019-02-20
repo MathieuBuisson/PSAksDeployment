@@ -1,7 +1,7 @@
 provider "kubernetes" {
   # Preventing automatic upgrades to new versions that may contain breaking changes.
-  # Any non-beta version >= 1.3.0 and < 2.0.0
-  version = "~>1.3"
+  # Any non-beta version >= 1.5.0 and < 2.0.0
+  version = "~>1.5"
 }
 
 provider "null" {
@@ -9,7 +9,7 @@ provider "null" {
 }
 
 provider "helm" {
-  version = "~>0.6"
+  version = "~>0.8"
 }
 
 provider "template" {
