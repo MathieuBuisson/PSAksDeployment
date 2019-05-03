@@ -72,3 +72,59 @@ Describe 'Secret propagator' {
         }
     }
 }
+
+Describe 'Prometheus' {
+
+    It 'Status of release [prometheus] is "DEPLOYED"' {
+        $PrometheusStatus = ConvertFrom-Json (helm status prometheus -o json)
+        $PrometheusStatus.info.status.code | Should -Be 1
+    }
+    It 'Has pod(s) for the server component' {
+        & kubectl get pods -n management -l "app=prometheus,component=server" -o jsonpath="{.items[0].metadata.name}" |
+        Should -Not -BeNullOrEmpty
+    }
+    It 'Has a pod(s) for the pushgateway component' {
+        & kubectl get pods -n management -l "app=prometheus,component=pushgateway" -o jsonpath="{.items[0].metadata.name}" |
+            Should -Not -BeNullOrEmpty
+    }
+    It 'Has a pod(s) for the alertmanager component' {
+        & kubectl get pods -n management -l "app=prometheus,component=alertmanager" -o jsonpath="{.items[0].metadata.name}" |
+            Should -Not -BeNullOrEmpty
+    }
+    It 'Has a service for the server component' {
+        & kubectl get svc -n management -l "app=prometheus,component=server" -o jsonpath="{.items[0].metadata.name}" |
+            Should -Not -BeNullOrEmpty
+    }
+    It 'Has a service for the pushgateway component' {
+        & kubectl get svc -n management -l "app=prometheus,component=pushgateway" -o jsonpath="{.items[0].metadata.name}" |
+            Should -Not -BeNullOrEmpty
+    }
+    It 'Has a service for the alertmanager component' {
+        & kubectl get svc -n management -l "app=prometheus,component=alertmanager" -o jsonpath="{.items[0].metadata.name}" |
+            Should -Not -BeNullOrEmpty
+    }
+    It 'Has a [prometheus-server] persistent volume claim successfully bound' {
+        & kubectl get pvc/prometheus-server -n management -o jsonpath="{.status.phase}" |
+        Should -Be 'Bound'
+    }
+}
+
+Describe 'Grafana'{
+
+    It 'Status of release [grafana] is "DEPLOYED"' {
+        $GrafanaStatus = ConvertFrom-Json (helm status grafana -o json)
+        $GrafanaStatus.info.status.code | Should -Be 1
+    }
+    It 'Has pod(s) for grafana' {
+        & kubectl get pods -n management -l "app=grafana" -o jsonpath="{.items[0].metadata.name}" |
+            Should -Not -BeNullOrEmpty
+    }
+    It 'Has a service for grafana' {
+        & kubectl get svc -n management -l "app=grafana" -o jsonpath="{.items[0].metadata.name}" |
+            Should -Not -BeNullOrEmpty
+    }
+    It 'Has a [grafana] persistent volume claim successfully bound' {
+        & kubectl get pvc/grafana -n management -o jsonpath="{.status.phase}" |
+            Should -Be 'Bound'
+    }
+}
