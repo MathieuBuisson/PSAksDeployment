@@ -41,15 +41,15 @@ Function Install-PSAksPrerequisites {
 
         [Parameter(Mandatory=$False, Position=1)]
         [ValidateScript({ ($_ -as [System.Version]) -as [bool] })]
-        [string]$TerraformVersion = '0.11.11',
+        [string]$TerraformVersion = '0.11.13',
 
         [Parameter(Mandatory=$False, Position=2)]
         [ValidateScript({ ($_ -as [System.Version]) -as [bool] })]
-        [string]$KubectlVersion = '1.12.3',
+        [string]$KubectlVersion = '1.14.1',
 
         [Parameter(Mandatory=$False, Position=3)]
         [ValidateScript({ ($_ -as [System.Version]) -as [bool] })]
-        [string]$HelmVersion = '2.11.0'
+        [string]$HelmVersion = '2.13.1'
     )
 
     If ( -not(Test-Path -Path $InstallationFolder -PathType Container) ) {
