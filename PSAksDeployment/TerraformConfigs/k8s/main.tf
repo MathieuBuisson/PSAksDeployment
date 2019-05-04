@@ -162,7 +162,6 @@ resource "helm_release" "secret_propagator" {
   depends_on = ["null_resource.ingress_cert_label"]
 
   values = [<<EOF
-kubectlVersion: '1.12.1'
 selector:
   key: propagate-to-ns
   value: 'true'

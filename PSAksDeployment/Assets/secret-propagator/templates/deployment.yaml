@@ -16,7 +16,7 @@ spec:
       serviceAccountName: secret-propagator
       containers:
       - name: ns-watcher
-        image: boxboat/kubectl:{{ .Values.kubectlVersion }}
+        image: lachlanevenson/k8s-kubectl:{{ .Values.kubectlVersion }}
         command:
         - sh
         - -c
@@ -38,7 +38,7 @@ spec:
             done
           done
       - name: secret-watcher
-        image: boxboat/kubectl:{{ .Values.kubectlVersion }}
+        image: lachlanevenson/k8s-kubectl:{{ .Values.kubectlVersion }}
         command:
         - sh
         - -c
