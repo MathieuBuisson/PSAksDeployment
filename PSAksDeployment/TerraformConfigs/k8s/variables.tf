@@ -6,6 +6,10 @@ variable "ingressctrl_replica_count" {
   description = "Number of pods to run the ingress controller"
 }
 
+variable "prometheus_svr_replica_count" {
+  description = "Number of pods to run the server component of Prometheus"
+}
+
 variable "ingressctrl_ip_address" {
   description = "Public IP address to assign to the ingress controller"
 }

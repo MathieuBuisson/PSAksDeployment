@@ -11,7 +11,7 @@ $ErrorActionPreference = 'Stop'
 $LoopIteration = 0
 Do {
     Write-Host "Waiting for the secret [$SecretName] to be created"
-    Start-Sleep -Seconds 9
+    Start-Sleep -Seconds 10
     $SecretIsPresent = & kubectl get secret $SecretName -n $Namespace --ignore-not-found
     $LoopIteration++
 }

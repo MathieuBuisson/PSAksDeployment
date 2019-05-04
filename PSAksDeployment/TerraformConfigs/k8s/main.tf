@@ -87,6 +87,31 @@ EOF
   ]
 }
 
+resource "helm_release" "prometheus" {
+  name       = "prometheus"
+  chart      = "stable/prometheus"
+  version    = "8.10.3"
+  namespace  = "${kubernetes_namespace.management.metadata.0.name}"
+  timeout    = "600"
+  depends_on = ["null_resource.helm_repo_update"]
+
+  values = [<<EOF
+  alertmanager:
+    persistentVolume:
+      storageClass: managed-premium
+  server:
+    replicaCount: ${var.prometheus_svr_replica_count}
+    statefulSet:
+      enabled: true
+    persistentVolume:
+      storageClass: managed-premium
+  pushgateway:
+    persistentVolume:
+      storageClass: managed-premium
+EOF
+  ]
+}
+
 resource "helm_release" "cert_manager" {
   name  = "cert-manager"
   chart = "stable/cert-manager"
@@ -103,6 +128,21 @@ resource "helm_release" "cert_manager" {
   ingressShim:
     defaultIssuerName: letsencrypt-${var.letsencrypt_environment}
     defaultIssuerKind: ClusterIssuer
+EOF
+  ]
+}
+
+resource "helm_release" "grafana" {
+  name       = "grafana"
+  chart      = "stable/grafana"
+  version    = "3.3.6"
+  namespace  = "${kubernetes_namespace.management.metadata.0.name}"
+  depends_on = ["helm_release.cert_manager", "helm_release.prometheus"]
+
+  values = [<<EOF
+  persistence:
+    enabled: true
+    storageClassName: managed-premium
 EOF
   ]
 }

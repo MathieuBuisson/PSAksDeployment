@@ -103,9 +103,15 @@ Describe 'Prometheus' {
         & kubectl get svc -n management -l "app=prometheus,component=alertmanager" -o jsonpath="{.items[0].metadata.name}" |
             Should -Not -BeNullOrEmpty
     }
-    It 'Has a [prometheus-server] persistent volume claim successfully bound' {
-        & kubectl get pvc/prometheus-server -n management -o jsonpath="{.status.phase}" |
-        Should -Be 'Bound'
+    It "Has a stateful set for the server component's pods" {
+        (& kubectl get statefulset -n management -l "app=prometheus,component=server" -o json | ConvertFrom-Json).items |
+            Where-Object kind -eq StatefulSet | Should -Not -BeNullOrEmpty
+    }
+    It 'Has all persistent volume claims for the server component successfully bound' {
+        $ServerPvcs = (& kubectl get pvc -n management -l "app=prometheus,component=server" -o json | ConvertFrom-Json)
+        Foreach ($Pvc in $ServerPvcs.items) {
+            $Pvc.status.phase | Should -Be 'Bound'
+        }
     }
 }
 
@@ -123,8 +129,10 @@ Describe 'Grafana'{
         & kubectl get svc -n management -l "app=grafana" -o jsonpath="{.items[0].metadata.name}" |
             Should -Not -BeNullOrEmpty
     }
-    It 'Has a [grafana] persistent volume claim successfully bound' {
-        & kubectl get pvc/grafana -n management -o jsonpath="{.status.phase}" |
-            Should -Be 'Bound'
+    It 'Has all persistent volume claim for Grafana successfully bound' {
+        $GrafanaPvcs = (& kubectl get pvc -n management -l "app=grafana" -o json | ConvertFrom-Json)
+        Foreach ($Pvc in $GrafanaPvcs.items) {
+            $Pvc.status.phase | Should -Be 'Bound'
+        }
     }
 }

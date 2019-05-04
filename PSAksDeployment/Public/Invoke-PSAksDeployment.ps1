@@ -111,7 +111,7 @@ Function Invoke-PSAksDeployment {
         [string]$LogAnalyticsWorkspaceLocation,
 
         [Parameter(Mandatory=$False, Position=7, ParameterSetName='InputsFromParameters')]
-        [string]$KubernetesVersion = '1.13.5',
+        [string]$KubernetesVersion='1.13.5',
 
         [Parameter(Mandatory=$False, Position=8, ParameterSetName='InputsFromParameters')]
         [ValidateRange(1, 100)]
@@ -141,7 +141,7 @@ Function Invoke-PSAksDeployment {
         [string]$TerraformOutputFolder = $env:TEMP,
 
         [Parameter(Mandatory, ParameterSetName='InputsFromConfigFile')]
-        [ValidateScript({ Test-Path -Path $_ -PathType Leaf })]
+        [ValidateScript( { Test-Path -Path $_ -PathType Leaf })]
         [string]$ConfigPath
     )
 
@@ -203,16 +203,17 @@ Function Invoke-PSAksDeployment {
         Initialize-TerraformConfigK8s
 
         $K8sConfigParams = @{
-            ClusterName             = $ClusterName
-            TerraformOutputFolder   = $TerraformOutputFolder
+            ClusterName                  = $ClusterName
+            TerraformOutputFolder        = $TerraformOutputFolder
             # We should not need more than 2 replicas for Tiller
-            TillerReplicaCount      = [math]::Min($NodeCount, 2)
-            IngressCtrlReplicaCount = [math]::Min($NodeCount, 2)
-            IngressCtrlIPAddress    = $IngressCtrlIPAddress
-            LetsEncryptEmail        = $LetsEncryptEmail
-            LetsEncryptEnvironment  = If ( $Environment -eq 'Prod' ) {'prod'} Else {'staging'}
-            IngressCtrlFqdn         = '{0}.{1}.cloudapp.azure.com' -f $ClusterName, ($ClusterLocation -replace '\s','').ToLower()
-            Environment             = $Environment
+            TillerReplicaCount           = [math]::Min($NodeCount, 2)
+            IngressCtrlReplicaCount      = [math]::Min($NodeCount, 2)
+            PrometheusServerReplicaCount = [math]::Min($NodeCount, 2)
+            IngressCtrlIPAddress         = $IngressCtrlIPAddress
+            LetsEncryptEmail             = $LetsEncryptEmail
+            LetsEncryptEnvironment       = If ( $Environment -eq 'Prod' ) {'prod'} Else {'staging'}
+            IngressCtrlFqdn              = '{0}.{1}.cloudapp.azure.com' -f $ClusterName, ($ClusterLocation -replace '\s', '').ToLower()
+            Environment                  = $Environment
         }
         Invoke-TerraformConfigK8s @K8sConfigParams
     }

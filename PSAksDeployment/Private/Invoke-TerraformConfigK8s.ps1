@@ -11,6 +11,9 @@ Function Invoke-TerraformConfigK8s {
         [int]$IngressCtrlReplicaCount,
 
         [Parameter(Mandatory)]
+        [int]$PrometheusServerReplicaCount,
+
+        [Parameter(Mandatory)]
         [string]$IngressCtrlIPAddress,
 
         [Parameter(Mandatory)]
@@ -51,6 +54,7 @@ Function Invoke-TerraformConfigK8s {
 
     $TillerPodCountVar = '-var tiller_replica_count={0}' -f $TillerReplicaCount.ToString()
     $IngressCtrlCountVar = 'ingressctrl_replica_count={0}' -f $IngressCtrlReplicaCount.ToString()
+    $PrometheusSvrCountVar = 'prometheus_svr_replica_count={0}' -f $PrometheusServerReplicaCount.ToString()
     $IngressCtrlIpVar = 'ingressctrl_ip_address={0}' -f $IngressCtrlIPAddress
     $EmailVar = 'letsencrypt_email_address={0}' -f $LetsEncryptEmail
     $LetsEncryptEnv = 'letsencrypt_environment={0}' -f $LetsEncryptEnvironment
@@ -58,7 +62,7 @@ Function Invoke-TerraformConfigK8s {
     $CertYamlVar = 'ingress_cert_yaml_path={0}' -f $CertYamlPathJsonEscape
     $EnvVar = 'environment={0}' -f $Environment
 
-    $PlanCmdVars = $TillerPodCountVar, $IngressCtrlCountVar, $IngressCtrlIpVar, $EmailVar, $LetsEncryptEnv, $IngressFqdnVar, $CertYamlVar, $EnvVar -join ' -var '
+    $PlanCmdVars = $TillerPodCountVar, $IngressCtrlCountVar, $PrometheusSvrCountVar, $IngressCtrlIpVar, $EmailVar, $LetsEncryptEnv, $IngressFqdnVar, $CertYamlVar, $EnvVar -join ' -var '
     $PlanCmd = [scriptblock]::Create("terraform.exe plan -out=$PlanPathJsonEscape -input=false -detailed-exitcode $PlanCmdVars")
     & $PlanCmd
 
