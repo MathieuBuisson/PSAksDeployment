@@ -15,6 +15,8 @@ Function Invoke-PSAksDeployment {
       - cert-manager installation and configuration
       - a TLS certificate for the ingress controller (to support HTTPS)
       - secret-propagator
+      - Prometheus deployment in the Kubernetes cluster
+      - Grafana deployment in the Kubernetes cluster
 
     This function is mostly an input validation and orchestration layer on top of Terraform.
 
@@ -85,7 +87,7 @@ Function Invoke-PSAksDeployment {
 
     Provisions and configures an AKS cluster according to the parameter values in the file "Dev_Config.psd1" in the current directory.
 #>
-    [CmdletBinding(DefaultParameterSetName = 'InputsFromParameters')]
+    [CmdletBinding(DefaultParameterSetName='InputsFromParameters')]
     Param(
         [Parameter(Mandatory, Position=0, ParameterSetName='InputsFromParameters')]
         [string]$ServicePrincipalID,
@@ -111,7 +113,7 @@ Function Invoke-PSAksDeployment {
         [string]$LogAnalyticsWorkspaceLocation,
 
         [Parameter(Mandatory=$False, Position=7, ParameterSetName='InputsFromParameters')]
-        [string]$KubernetesVersion='1.13.5',
+        [string]$KubernetesVersion = '1.13.5',
 
         [Parameter(Mandatory=$False, Position=8, ParameterSetName='InputsFromParameters')]
         [ValidateRange(1, 100)]
@@ -141,7 +143,7 @@ Function Invoke-PSAksDeployment {
         [string]$TerraformOutputFolder = $env:TEMP,
 
         [Parameter(Mandatory, ParameterSetName='InputsFromConfigFile')]
-        [ValidateScript( { Test-Path -Path $_ -PathType Leaf })]
+        [ValidateScript({ Test-Path -Path $_ -PathType Leaf })]
         [string]$ConfigPath
     )
 

@@ -7,7 +7,7 @@
 **[Azure Kubernetes Service](https://azure.microsoft.com/en-us/services/kubernetes-service/)** (AKS) makes provisioning **[Kubernetes](https://kubernetes.io/)** clusters very easy, in a "Hello World!" kind of way.
 
 But deploying a **production-ready** Kubernetes cluster requires additonal components and considerations :
-  - Monitoring
+  - Monitoring (with metrics and logs)
   - [Kubectl](https://kubernetes.io/docs/reference/kubectl) configuration
   - How to deploy resources ([Helm](https://helm.sh/) and Tiller)
   - Routing requests from the outside world to services in the cluster (ingress controller)
@@ -16,7 +16,9 @@ But deploying a **production-ready** Kubernetes cluster requires additonal compo
 PSAksDeployment is a **PowerShell** module which facilitates all of the above by provisioning and configuring extra resources, in addition to the Azure AKS resource.
 
 It is an opinionated implementation, in the sense that :
-  - The monitoring solution is **[Azure Monitor](https://azure.microsoft.com/en-us/services/monitor/)** (with Log Analytics)
+  - Log aggregation and querying is done with **[Azure Monitor](https://azure.microsoft.com/en-us/services/monitor/)** (with Log Analytics)
+  - The metrics collection/querying/alerting solution is **[Prometheus](https://prometheus.io/)**
+  - The metrics charting/graphing/dashboard solution is **[Grafana](https://grafana.com/)**
   - The ingress controller is **[NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/)**
   - Management Kubernetes resources are deployed into a "management" namespace
   - The solution to manage TLS certificates is **[cert-manager](https://github.com/jetstack/cert-manager)** (with Let's Encrypt)
@@ -255,6 +257,31 @@ cluster-issuer       1           Sun Dec  9 18:49:51 2018      DEPLOYED       cl
 nginx-ingress        1           Sun Dec  9 18:43:16 2018      DEPLOYED       nginx-ingress-1.0.1     0.21.0        management
 secret-propagator    1           Sun Dec  9 18:51:40 2018      DEPLOYED       secret-propagator-0.1.0 1.0           management
 ```
+
+To open the **Prometheus** web interface, run the following commands :
+
+```powershell
+PS C:\> $PrometheusSvc = kubectl get svc -n management -l "app=prometheus,component=server" -o jsonpath="{.items[0].metadata.name}"
+PS C:\> kubectl -n management port-forward $PrometheusSvc 9090
+PS C:\> start "http://localhost:9090"
+```  
+
+To login to **Grafana** web interface, we first need to get the `admin` account password :
+
+```powershell
+PS C:\> $Base64Passwd = kubectl get secret grafana -n management -o jsonpath="{.data.admin-password}"
+PS C:\> $Passwd = [Text.Encoding]::Unicode.GetString([Convert]::FromBase64String($Base64Passwd))
+```  
+
+To access the **Grafana** web interface, run the following :
+
+```powershell
+PS C:\> $GrafanaSvc = kubectl get svc -n management -l "app=grafana" -o jsonpath="{.items[0].metadata.name}"
+PS C:\> kubectl -n management port-forward $GrafanaSvc 3000
+PS C:\> start "http://localhost:3000"
+```  
+
+You can login with username `admin` and the password obtained in the previous step.  
 
 ### Deleting the AKS cluster (and all associated resources)
 
