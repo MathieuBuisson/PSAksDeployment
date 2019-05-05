@@ -43,6 +43,12 @@ Describe 'Helm' {
 
 Describe 'Certificate' {
 
+    It "Has all cert-manager's pods in status [Running]" {
+        $CertmanagerPods = & kubectl get pods -n management -l "app=cert-manager" -o json | ConvertFrom-Json
+        Foreach ($Pod in $CertmanagerPods.items) {
+            $Pod.status.phase | Should -Be 'Running'
+        }
+    }
     It 'Has a certificate named [tls-secret] in the [management] namespace' {
         & kubectl get certificate tls-secret -n management | Select-Object -Last 1 |
             Should -Match '^tls-secret\s+'
@@ -54,6 +60,12 @@ Describe 'Secret propagator' {
     It 'Status of release [secret-propagator] is "DEPLOYED"' {
         $PropagatorStatus = ConvertFrom-Json (helm status secret-propagator -o json)
         $PropagatorStatus.info.status.code | Should -Be 1
+    }
+    It "Has all secret-propagator's pods in status [Running]" {
+        $SecretPropagatorPods = & kubectl get pods -n management -l "app=secret-propagator" -o json | ConvertFrom-Json
+        Foreach ($Pod in $SecretPropagatorPods.items) {
+            $Pod.status.phase | Should -Be 'Running'
+        }
     }
 
     $Namespaces = & kubectl get namespace --field-selector="status.phase==Active" -o=jsonpath="{range .items[*]}{.metadata.name}{';'}{end}"
@@ -90,6 +102,12 @@ Describe 'Prometheus' {
     It 'Has a pod(s) for the alertmanager component' {
         & kubectl get pods -n management -l "app=prometheus,component=alertmanager" -o jsonpath="{.items[0].metadata.name}" |
             Should -Not -BeNullOrEmpty
+    }
+    It "Has all Prometheus pods in status [Running]" {
+        $PrometheusPods = & kubectl get pods -n management -l "app=prometheus" -o json | ConvertFrom-Json
+        Foreach ($Pod in $PrometheusPods.items) {
+            $Pod.status.phase | Should -Be 'Running'
+        }
     }
     It 'Has a service for the server component' {
         & kubectl get svc -n management -l "app=prometheus,component=server" -o jsonpath="{.items[0].metadata.name}" |
@@ -128,6 +146,12 @@ Describe 'Grafana'{
     It 'Has a service for grafana' {
         & kubectl get svc -n management -l "app=grafana" -o jsonpath="{.items[0].metadata.name}" |
             Should -Not -BeNullOrEmpty
+    }
+    It "Has all Grafana's pods in status [Running]" {
+        $GrafanaPods = & kubectl get pods -n management -l "app=grafana" -o json | ConvertFrom-Json
+        Foreach ($Pod in $GrafanaPods.items) {
+            $Pod.status.phase | Should -Be 'Running'
+        }
     }
     It 'Has all persistent volume claim for Grafana successfully bound' {
         $GrafanaPvcs = (& kubectl get pvc -n management -l "app=grafana" -o json | ConvertFrom-Json)

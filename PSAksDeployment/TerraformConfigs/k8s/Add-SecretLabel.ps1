@@ -8,6 +8,9 @@ Param(
 
 $ErrorActionPreference = 'Stop'
 
+# Approximate time for the certificate request to complete
+Start-Sleep -Seconds 100
+
 $LoopIteration = 0
 Do {
     Write-Host "Waiting for the secret [$SecretName] to be created"
