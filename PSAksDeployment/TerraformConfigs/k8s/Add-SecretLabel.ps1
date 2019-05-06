@@ -9,7 +9,7 @@ Param(
 $ErrorActionPreference = 'Stop'
 
 # Approximate time for the certificate request to complete
-Start-Sleep -Seconds 100
+Start-Sleep -Seconds 110
 
 $LoopIteration = 0
 Do {
