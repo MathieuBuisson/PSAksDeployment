@@ -83,6 +83,8 @@ It deploys the following :
   - **[cert-manager](https://github.com/jetstack/cert-manager)**
   - a TLS certificate (to support HTTPS ingresses)
   - **[secret-propagator](https://github.com/MathieuBuisson/PSAksDeployment/tree/master/PSAksDeployment/Assets/secret-propagator)**
+  - **[Prometheus](https://prometheus.io/)** (HA setup for the server component)
+  - **[Grafana](https://grafana.com/)**
 
 It primarily acts as an input validation and orchestration layer. Under the hood, most of the work is done by applying **[Terraform](https://www.terraform.io/)** configurations.
 
@@ -261,8 +263,8 @@ secret-propagator    1           Sun Dec  9 18:51:40 2018      DEPLOYED       se
 To open the **Prometheus** web interface, run the following commands :
 
 ```powershell
-PS C:\> $PrometheusSvc = kubectl get svc -n management -l "app=prometheus,component=server" -o jsonpath="{.items[0].metadata.name}"
-PS C:\> kubectl -n management port-forward $PrometheusSvc 9090
+PS C:\> $PromSvcPort = kubectl get svc prometheus-server -n management -o jsonpath="{.spec.ports[?(@.name=='http')].port}"
+PS C:\> kubectl -n management port-forward svc/prometheus-server 9090:$PromSvcPort
 PS C:\> start "http://localhost:9090"
 ```  
 
@@ -270,18 +272,19 @@ To login to **Grafana** web interface, we first need to get the `admin` account 
 
 ```powershell
 PS C:\> $Base64Passwd = kubectl get secret grafana -n management -o jsonpath="{.data.admin-password}"
-PS C:\> $Passwd = [Text.Encoding]::Unicode.GetString([Convert]::FromBase64String($Base64Passwd))
+PS C:\> [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($Base64Passwd))
 ```  
 
 To access the **Grafana** web interface, run the following :
 
 ```powershell
-PS C:\> $GrafanaSvc = kubectl get svc -n management -l "app=grafana" -o jsonpath="{.items[0].metadata.name}"
-PS C:\> kubectl -n management port-forward $GrafanaSvc 3000
+PS C:\> $GrafanaSvcName = kubectl get svc -n management -l "app=grafana" -o jsonpath="{.items[0].metadata.name}"
+PS C:\> $GrafanaSvcPort = kubectl get svc $GrafanaSvcName -n management -o jsonpath="{.spec.ports[0].port}"
+PS C:\> kubectl -n management port-forward svc/$GrafanaSvcName 3000:$GrafanaSvcPort
 PS C:\> start "http://localhost:3000"
 ```  
 
-You can login with username `admin` and the password obtained in the previous step.  
+You can now login with username `admin` and the password obtained in the previous step.  
 
 ### Deleting the AKS cluster (and all associated resources)
 
