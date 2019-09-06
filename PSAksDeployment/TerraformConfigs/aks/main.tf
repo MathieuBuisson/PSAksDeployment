@@ -9,7 +9,7 @@ resource "azurerm_log_analytics_workspace" "aks" {
   resource_group_name = "${azurerm_resource_group.aks.name}"
   sku                 = "standalone"
 
-  tags {
+  tags = {
     environment = "${var.environment}"
   }
 }
@@ -63,7 +63,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     }
   }
 
-  tags {
+  tags = {
     Environment = "${var.environment}"
   }
 
@@ -77,7 +77,7 @@ resource "azurerm_public_ip" "ingressctrl_ip" {
   allocation_method   = "Static"
   domain_name_label   = "${var.cluster_name}"
 
-  tags {
+  tags = {
     environment = "${var.environment}"
   }
 }
