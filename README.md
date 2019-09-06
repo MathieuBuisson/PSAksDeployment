@@ -111,7 +111,7 @@ TerraformOutputFolder
 ConfigPath
 ```
 
-You may be wondering :
+You may be wondering :  
 > What are these for ?  
 Which ones are mandatory ?  
 What is the default value ?  
@@ -213,9 +213,9 @@ PS C:\> Get-Content .\TestScaffold.psd1
     <#
     The version of Kubernetes software running in the AKS Cluster.
     Type : String
-    Valid values : "1.9.11", "1.10.12", "1.10.13", "1.11.8", "1.11.9", "1.12.6", "1.12.7", "1.13.5"
+    Valid values : "1.9.11", "1.10.12", "1.10.13", "1.11.8", "1.11.9", "1.12.6", "1.12.7", "1.13.10"
     #>
-    KubernetesVersion = "1.13.5"
+    KubernetesVersion = "1.13.10"
 
     <#
     The number of worker nodes in the AKS cluster.
@@ -266,14 +266,14 @@ To open the **Prometheus** web interface, run the following commands :
 PS C:\> $PromSvcPort = kubectl get svc prometheus-server -n management -o jsonpath="{.spec.ports[?(@.name=='http')].port}"
 PS C:\> kubectl -n management port-forward svc/prometheus-server 9090:$PromSvcPort
 PS C:\> start "http://localhost:9090"
-```  
+```
 
 To login to **Grafana** web interface, we first need to get the `admin` account password :
 
 ```powershell
 PS C:\> $Base64Passwd = kubectl get secret grafana -n management -o jsonpath="{.data.admin-password}"
 PS C:\> [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($Base64Passwd))
-```  
+```
 
 To access the **Grafana** web interface, run the following :
 
@@ -282,7 +282,7 @@ PS C:\> $GrafanaSvcName = kubectl get svc -n management -l "app=grafana" -o json
 PS C:\> $GrafanaSvcPort = kubectl get svc $GrafanaSvcName -n management -o jsonpath="{.spec.ports[0].port}"
 PS C:\> kubectl -n management port-forward svc/$GrafanaSvcName 3000:$GrafanaSvcPort
 PS C:\> start "http://localhost:3000"
-```  
+```
 
 You can now login with username `admin` and the password obtained in the previous step.  
 

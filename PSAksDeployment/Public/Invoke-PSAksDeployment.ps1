@@ -113,7 +113,7 @@ Function Invoke-PSAksDeployment {
         [string]$LogAnalyticsWorkspaceLocation,
 
         [Parameter(Mandatory=$False, Position=7, ParameterSetName='InputsFromParameters')]
-        [string]$KubernetesVersion = '1.13.5',
+        [string]$KubernetesVersion = '1.13.10',
 
         [Parameter(Mandatory=$False, Position=8, ParameterSetName='InputsFromParameters')]
         [ValidateRange(1, 100)]
